@@ -13,10 +13,13 @@ forc new counter_contract
 
 # compile
 forc build
+# format
+forc fmt
 
 # node
 fuel-core run --db-type in-memory
 # deploy
 forc deploy --unsigned
+
 
 ```
