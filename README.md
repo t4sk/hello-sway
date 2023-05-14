@@ -4,6 +4,19 @@ https://github.com/FuelLabs/fuelup
 
 ```shell
 fuelup toolchain install latest
+
+fuelup toolchain install beta-3
+fuelup default beta-3
+```
+
+### Update
+
+```shell
+fuelup self update
+
+# generate test
+cargo generate --init fuellabs/sway templates/sway-test-rs --name counter
+
 ```
 
 ### New project
