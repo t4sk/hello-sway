@@ -37,16 +37,48 @@ forc deploy --unsigned
 
 ```
 
--   Program types
+### Apps
 
-    -   contract, library, scripts, predicates
+-   counter
+-   wallet
+-   access control
+-   token
+-   bridge?
+-   multisig
+-   escrow
+-   auction
+-   nft
+-   airdrop
 
--   Basic
+### Topcis
+
+-   program types (contract, library, scripts, predicates)
+-   basic
     -   variables
-    -   built-in types
-    -   blockchain types
+    -   built-in
+    -   blockchain
     -   functions
-    -   structs, tuples and enums
-    -   methods and associated functions
-    -   control flows
-    -   comments and logging
+    -   structs
+    -   tuples
+    -   enums
+    -   methods
+    -   logging
+    -   control flow
+-   blockchain
+    -   hashing and cryptography
+    -   storage
+    -   function purity
+    -   identifier
+    -   native assets
+    -   access control
+    -   calling contracts
+-   advanced
+    -   generics
+    -   traits
+    -   assembly
+-   collections
+    -   vector on heap
+    -   vector and map
+-   Testing (unit, integration)
+-   Frontend
+-   Deploy, node
