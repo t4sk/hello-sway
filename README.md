@@ -40,7 +40,7 @@ forc deploy --unsigned
 ### Apps
 
 -   counter (storage)
--   ownership (Identity type, msg_sender, configurable, Error, imports)
+-   ownership (Identity type, msg_sender, configurable, Option, Error, imports)
 -   wallet (native assets, identity, access control)
 -   access control
 -   token
