@@ -39,12 +39,13 @@ forc deploy --unsigned
 
 ### Apps
 
--   counter
--   wallet
+-   counter (storage)
+-   ownership (Identity type, msg_sender, configurable, Error, imports)
+-   wallet (native assets, identity, access control)
 -   access control
 -   token
 -   bridge?
--   multisig
+-   multi-sig (multi token)
 -   escrow
 -   auction
 -   nft
@@ -82,3 +83,4 @@ forc deploy --unsigned
 -   Testing (unit, integration)
 -   Frontend
 -   Deploy, node
+-   wallet

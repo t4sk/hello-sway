@@ -1,6 +1,10 @@
 contract;
 
-use std::auth::{ msg_sender};
+mod errors;
+
+use std::auth::{msg_sender};
+use ::errors::{AccessControlError};
+
 
 abi MyContract {
     #[storage(read)]
@@ -11,16 +15,14 @@ abi MyContract {
 }
 
 configurable {
-    OWNER: Identity = Identity::Address(
-        // TODO: config from wallet address
-        Address::from(0x0000000000000000000000000000000000000000000000000000000000000000)
-    )
+    OWNER: Identity = Identity::Address(Address::from(0x0000000000000000000000000000000000000000000000000000000000000000)),
 }
 
 storage {
     owner: Identity = OWNER,
 }
 
+// TODO: test
 impl MyContract for Contract {
     #[storage(read)]
     fn owner() -> Identity {
@@ -30,7 +32,7 @@ impl MyContract for Contract {
     #[storage(read, write)]
     fn set_owner(id: Identity) {
         let sender = msg_sender();
-        require(sender.unwrap() == storage.owner, "not authorized");
+        require(sender.unwrap() == storage.owner, AccessControlError::UnauthorizedError);
         storage.owner = id;
     }
 }
