@@ -1,4 +1,4 @@
-use fuels::{prelude::*, tx::ContractId};
+use fuels::{prelude::*, tx::ContractId, types::Identity};
 
 // Load abi from json
 abigen!(Contract(
@@ -6,11 +6,11 @@ abigen!(Contract(
     abi = "out/debug/ownership-abi.json"
 ));
 
-async fn get_contract_instance() -> (MyContract<WalletUnlocked>, ContractId) {
+async fn get_contract_instance() -> (MyContract<WalletUnlocked>, ContractId, Vec<WalletUnlocked>) {
     // Launch a local network and deploy the contract
     let mut wallets = launch_custom_provider_and_get_wallets(
         WalletsConfig::new(
-            Some(1),             /* Single wallet */
+            Some(2),
             Some(1),             /* Single coin (UTXO) */
             Some(1_000_000_000), /* Amount per coin */
         ),
@@ -18,36 +18,74 @@ async fn get_contract_instance() -> (MyContract<WalletUnlocked>, ContractId) {
         None,
     )
     .await;
-    let wallet = wallets.pop().unwrap();
+    let wallet = &wallets[0];
 
     let id = Contract::deploy(
         "./out/debug/ownership.bin",
-        &wallet,
+        wallet,
         DeployConfiguration::default(),
     )
     .await
     .unwrap();
 
-    let instance = MyContract::new(id.clone(), wallet);
+    let instance = MyContract::new(id.clone(), wallet.clone());
 
-    (instance, id.into())
+    (instance, id.into(), wallets)
 }
-
-// #[tokio::test]
-// async fn can_get_owner() {
-//     let (instance, id) = get_contract_instance().await;
-
-//     let res = instance.methods().owner().call().await.unwrap();
-//     println!("{:?}", res);
-// }
 
 #[tokio::test]
 async fn test_init() {
-    let (instance, id) = get_contract_instance().await;
+    let (instance, contract_id, wallets) = get_contract_instance().await;
 
     instance.methods().init().call().await.unwrap();
 
     let res = instance.methods().owner().call().await.unwrap();
+    let addr = Address::from(wallets[0].address());
+    let wallet_id = Identity::Address(addr);
 
-    println!("{:?}", res);
+    // println!("{:?}", res.value);
+    // println!("{:?}", wallet);
+
+    assert_eq!(res.value.unwrap(), wallet_id);
+}
+
+#[tokio::test]
+async fn test_set_owner() {
+    let (instance, contract_id, wallets) = get_contract_instance().await;
+
+    instance.methods().init().call().await.unwrap();
+
+    let addr = Address::from(wallets[1].address());
+    let wallet_id = Identity::Address(addr);
+
+    instance
+        .methods()
+        .set_owner(wallet_id.clone())
+        .call()
+        .await
+        .unwrap();
+
+    let res = instance.methods().owner().call().await.unwrap();
+    assert_eq!(res.value.unwrap(), wallet_id);
+}
+
+// TODO: should_panic not authorized
+#[tokio::test]
+#[should_panic(expected = "UnauthorizedError")]
+async fn test_set_owner_unauthorized() {
+    let (instance, contract_id, wallets) = get_contract_instance().await;
+
+    instance.methods().init().call().await.unwrap();
+
+    let addr = Address::from(wallets[1].address());
+    let wallet_id = Identity::Address(addr);
+
+    instance
+        .with_account(wallets[1].clone())
+        .unwrap()
+        .methods()
+        .set_owner(wallet_id.clone())
+        .call()
+        .await
+        .unwrap();
 }

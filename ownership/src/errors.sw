@@ -5,5 +5,5 @@ pub enum AccessControlError {
 }
 
 pub enum InitError {
-    CannotReinitialize: ()
+    CannotReinitialize: (),
 }

@@ -16,6 +16,7 @@ abi MyContract {
     fn set_owner(id: Identity);
 }
 
+
 // configurable {
 //     OWNER: Identity = Identity::Address(Address::from(0x0000000000000000000000000000000000000000000000000000000000000000)),
 // }
