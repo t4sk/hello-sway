@@ -85,15 +85,16 @@ async fn test_withdraw() {
         .await
         .unwrap();
 
+    // let bal = wallets[0].get_asset_balance(&BASE_ASSET_ID).await.unwrap();
+    // println!("{:?}", bal);
+
+    // This fails with error "failed transfer to address"
     instance
         .methods()
-        .send(Address::from(wallets[1].address()), 5)
+        .send(Address::from(wallets[1].address()), 1)
         .call()
         .await
         .unwrap();
-
-    // let res = instance.methods().balance().call().await.unwrap();
-    // assert_eq!(res.value, 5);
 
     let bal = wallets[1].get_asset_balance(&BASE_ASSET_ID).await.unwrap();
     println!("{:?}", bal);

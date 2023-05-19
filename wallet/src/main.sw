@@ -2,15 +2,14 @@ contract;
 
 mod errors;
 
-use std::auth::{msg_sender};
-use ::errors::{AccessControlError, InitError};
-
+use std::auth::msg_sender;
 use std::{
     call_frames::msg_asset_id,
     constants::BASE_ASSET_ID,
     context::msg_amount,
     token::transfer_to_address,
 };
+use ::errors::{AccessControlError, InitError};
 
 abi MyWallet {
     #[storage(read, write)]
@@ -65,6 +64,7 @@ impl MyWallet for Contract {
         require(sender.unwrap() == storage.owner.unwrap(), AccessControlError::UnauthorizedError);
         // TODO: check underflow
         storage.balance -= amount;
+
         transfer_to_address(amount, BASE_ASSET_ID, to);
     }
 }
