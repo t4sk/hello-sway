@@ -41,12 +41,12 @@ forc deploy --unsigned
 
 -   counter (storage)
 -   ownership (Identity type, msg_sender, configurable, Option, Error, imports)
--   wallet (native assets, identity, access control)
--   access control
+-   wallet (native assets, identity, access control, payable)
 -   token
 -   bridge?
 -   multi-sig (multi token)
 -   escrow
+-   amm
 -   auction
 -   nft
 -   airdrop
