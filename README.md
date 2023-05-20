@@ -41,7 +41,7 @@ forc deploy --unsigned
 
 -   counter (storage)
 -   ownership (Identity type, msg_sender, configurable, Option, Error, imports)
--   wallet (native assets, identity, access control, payable)
+-   wallet (native assets, identity, access control, payable, output variables)
 -   token
 -   bridge?
 -   multi-sig (multi token)

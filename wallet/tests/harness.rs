@@ -69,7 +69,7 @@ async fn test_deposit() {
 }
 
 #[tokio::test]
-async fn test_withdraw() {
+async fn test_send() {
     let (instance, contract_id, wallets) = get_contract_instance().await;
 
     instance.methods().init().call().await.unwrap();
@@ -85,17 +85,43 @@ async fn test_withdraw() {
         .await
         .unwrap();
 
-    // let bal = wallets[0].get_asset_balance(&BASE_ASSET_ID).await.unwrap();
-    // println!("{:?}", bal);
-
-    // This fails with error "failed transfer to address"
     instance
         .methods()
         .send(Address::from(wallets[1].address()), 1)
+        .append_variable_outputs(1)
         .call()
         .await
         .unwrap();
 
     let bal = wallets[1].get_asset_balance(&BASE_ASSET_ID).await.unwrap();
-    println!("{:?}", bal);
+    assert_eq!(bal, 1000000001);
+}
+
+#[tokio::test]
+#[should_panic(expected = "UnauthorizedError")]
+async fn test_send_unauthorized() {
+    let (instance, contract_id, wallets) = get_contract_instance().await;
+
+    instance.methods().init().call().await.unwrap();
+
+    let call_params = CallParameters::default().set_amount(10);
+
+    instance
+        .methods()
+        .deposit()
+        .call_params(call_params)
+        .unwrap()
+        .call()
+        .await
+        .unwrap();
+
+    instance
+        .with_account(wallets[1].clone())
+        .unwrap()
+        .methods()
+        .send(Address::from(wallets[1].address()), 1)
+        .append_variable_outputs(1)
+        .call()
+        .await
+        .unwrap();
 }

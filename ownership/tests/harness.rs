@@ -69,7 +69,6 @@ async fn test_set_owner() {
     assert_eq!(res.value.unwrap(), wallet_id);
 }
 
-// TODO: should_panic not authorized
 #[tokio::test]
 #[should_panic(expected = "UnauthorizedError")]
 async fn test_set_owner_unauthorized() {
