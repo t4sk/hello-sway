@@ -22,11 +22,12 @@ abi MyToken {
     fn burn(amount: u64);
     fn mint_to_address(amount: u64, to: Address);
     fn mint_to_contract(amount: u64, to: ContractId);
-    fn transfer_to_address(amount: u64, token_id: ContractId, to: Address);
-    fn force_transfer_to_contract(amount: u64, token_id: ContractId, contract_id: ContractId);
+    fn transfer_to_address(amount: u64, asset_id: ContractId, to: Address);
+    fn force_transfer_to_contract(amount: u64, asset_id: ContractId, contract_id: ContractId);
     // Deposit any token back to this contract
+    #[payable]
     fn deposit();
-    fn get_balance_of_contract(contract_id: ContractId, token_id: ContractId) -> u64;
+    fn get_balance_of_contract(contract_id: ContractId, asset_id: ContractId) -> u64;
     // TODO: get balance of account?
 }
 
@@ -54,22 +55,23 @@ impl MyToken for Contract {
         mint_to_contract(amount, to);
     }
 
-    // Like ERC20(token).transfer(to, amount)
-    fn transfer_to_address(amount: u64, token_id: ContractId, to: Address) {
-        transfer_to_address(amount, token_id, to);
+    // Like ERC20(token).transferFrom(address(this), to, amount)
+    fn transfer_to_address(amount: u64, asset_id: ContractId, to: Address) {
+        transfer_to_address(amount, asset_id, to);
     }
 
-    // Like ERC20(token).transfer(to, amount)
-    fn force_transfer_to_contract(amount: u64, token_id: ContractId, contract_id: ContractId) {
-        force_transfer_to_contract(amount, token_id, contract_id)
+    // Like ERC20(token).transferFrom(address(this), to, amount)
+    fn force_transfer_to_contract(amount: u64, asset_id: ContractId, contract_id: ContractId) {
+        force_transfer_to_contract(amount, asset_id, contract_id)
     }
 
     // Like ERC20(token).transferFrom(msg.sender, address(this), amount)
+    #[payable]
     fn deposit() {
         assert(msg_amount() > 0)
     }
 
-    fn get_balance_of_contract(contract_id: ContractId, token_id: ContractId) -> u64 {
-        balance_of(contract_id, token_id)
+    fn get_balance_of_contract(contract_id: ContractId, asset_id: ContractId) -> u64 {
+        balance_of(contract_id, asset_id)
     }
 }
