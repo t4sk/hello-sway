@@ -1,4 +1,3 @@
-
 use fuels::{prelude::*, tx::ContractId, types::AssetId};
 
 // Load abi from json
@@ -7,7 +6,11 @@ abigen!(Contract(
     abi = "out/debug/wrapped_token-abi.json"
 ));
 
-async fn get_contract_instance() -> (WrappedToken<WalletUnlocked>, ContractId, Vec<WalletUnlocked>) {
+async fn get_contract_instance() -> (
+    WrappedToken<WalletUnlocked>,
+    ContractId,
+    Vec<WalletUnlocked>,
+) {
     // Launch a local network and deploy the contract
     let mut wallets = launch_custom_provider_and_get_wallets(
         WalletsConfig::new(
@@ -34,8 +37,7 @@ async fn get_contract_instance() -> (WrappedToken<WalletUnlocked>, ContractId, V
     (instance, id.into(), wallets)
 }
 
-// TODO: test reverts
-
+// NOTE: need another contract to test deposit / withdraw to contract
 #[tokio::test]
 async fn test_deposit_and_withdraw_to_address() {
     let (instance, contract_id, wallets) = get_contract_instance().await;
@@ -76,60 +78,46 @@ async fn test_deposit_and_withdraw_to_address() {
     assert_eq!(bal, 9);
 }
 
-// #[tokio::test]
-// async fn test_mint_and_transfer_to_contract() {
-//     let (instance, contract_id, wallets) = get_contract_instance().await;
-//     let asset_id = AssetId::new(contract_id.into());
+#[tokio::test]
+#[should_panic(expected = "msg amount = 0")]
+async fn test_deposit_zero_amount() {
+    let (instance, contract_id, wallets) = get_contract_instance().await;
 
-//     // mint
-//     instance.methods().mint(100).call().await.unwrap();
+    let asset_id = AssetId::new(contract_id.into());
 
-//     // burn
-//     instance.methods().burn(10).call().await.unwrap();
+    // deposit
+    let call_params = CallParameters::default().set_amount(0);
 
-//     // mint to address
-//     instance
-//         .methods()
-//         .mint_to_address(10, Address::from(wallets[0].address()))
-//         .append_variable_outputs(1)
-//         .call()
-//         .await
-//         .unwrap();
+    instance
+        .methods()
+        .deposit()
+        .call_params(call_params)
+        .unwrap()
+        .append_variable_outputs(1)
+        .call()
+        .await
+        .unwrap();
+}
 
-//     // mint to contract
-//     instance
-//         .methods()
-//         .mint_to_contract(100, contract_id)
-//         .call()
-//         .await
-//         .unwrap();
+#[tokio::test]
+#[should_panic(expected = "not base asset")]
+async fn test_deposit_not_base_asset() {
+    let (instance, contract_id, wallets) = get_contract_instance().await;
 
-//     // transfer to address
-//     instance
-//         .methods()
-//         .transfer_to_address(10, contract_id, Address::from(wallets[0].address()))
-//         .append_variable_outputs(1)
-//         .call()
-//         .await
-//         .unwrap();
+    let asset_id = AssetId::new(contract_id.into());
 
-//     let bal = wallets[0].get_asset_balance(&asset_id).await.unwrap();
-//     println!("WALLET BALANCE {:?}", bal);
+    // deposit
+    let call_params = CallParameters::default()
+        .set_amount(10)
+        .set_asset_id(asset_id);
 
-//     // force transfer to contract
-//     instance
-//         .methods()
-//         .force_transfer_to_contract(10, contract_id, contract_id)
-//         .call()
-//         .await
-//         .unwrap();
-
-//     let res = instance
-//         .methods()
-//         .get_balance_of_contract(contract_id, contract_id)
-//         .call()
-//         .await
-//         .unwrap();
-
-//     println!("CONTRACT BALANCE {:?}", res.value);
-// }
+    instance
+        .methods()
+        .deposit()
+        .call_params(call_params)
+        .unwrap()
+        .append_variable_outputs(1)
+        .call()
+        .await
+        .unwrap();
+}
