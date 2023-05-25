@@ -1,0 +1,21 @@
+[[package]]
+name = 'air-drop'
+source = 'member'
+dependencies = [
+    'merkle_proof',
+    'std',
+]
+
+[[package]]
+name = 'core'
+source = 'path+from-root-67732E1923984E25'
+
+[[package]]
+name = 'merkle_proof'
+source = 'git+https://github.com/FuelLabs/sway-libs?tag=v0.10.0#0444499cf24b383eda96ad24c93e3b8bc31ab1b9'
+dependencies = ['std']
+
+[[package]]
+name = 'std'
+source = 'git+https://github.com/fuellabs/sway?tag=v0.37.3#d09ef912828f5fc7193501ccf8a0d0fb0f36a821'
+dependencies = ['core']
