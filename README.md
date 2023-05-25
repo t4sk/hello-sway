@@ -45,7 +45,8 @@ forc deploy --unsigned
 -   native token (native assets, asset id, payable, output variables)
 -   wrapped token (contract_id, msg_asset_id, mint, burn, transfer)
 -   bridge?
--   multi-sig (multi token)
+-   call contract
+-   multi-sig (multi token, multi abi, loop, storage vec, events, generic_call)
 -   escrow
 -   amm
 -   auction
@@ -54,6 +55,10 @@ forc deploy --unsigned
 
 ### Topcis
 
+-   deploy to testnet
+
+-   inheritance?
+-   assert, require, revert
 -   program types (contract, library, scripts, predicates)
 -   basic
     -   variables
