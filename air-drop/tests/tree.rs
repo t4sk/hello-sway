@@ -1,46 +1,37 @@
-use fuel_merkle::{
-    binary::in_memory::MerkleTree,
-    common::{empty_sum_sha256, Bytes32, LEAF, NODE},
-};
-use fuels::{
-    accounts::ViewOnlyAccount,
-    prelude::{
-        abigen, launch_custom_provider_and_get_wallets, Config, Contract, ContractId,
-         StorageConfiguration, TxParameters, WalletUnlocked, WalletsConfig,
-    },
-    tx::AssetId,
-    types::{Bits256, Identity},
-};
+use fuel_merkle::{binary::in_memory::MerkleTree, common::Bytes32};
+use fuels::types::{Bits256, Identity};
 use sha2::{Digest, Sha256};
 
-#[derive(Clone)]
-struct Node {
-    hash: Bytes32,
-    left: Option<usize>,
-    right: Option<usize>,
-}
+// TODO: remove unused code
 
-impl Node {
-    fn new(hash: Bytes32) -> Self {
-        Node {
-            hash,
-            left: None,
-            right: None,
-        }
-    }
+// #[derive(Clone)]
+// struct Node {
+//     hash: Bytes32,
+//     left: Option<usize>,
+//     right: Option<usize>,
+// }
 
-    fn left(mut self, node: usize) -> Self {
-        self.left = Some(node);
-        self
-    }
+// impl Node {
+//     fn new(hash: Bytes32) -> Self {
+//         Node {
+//             hash,
+//             left: None,
+//             right: None,
+//         }
+//     }
 
-    fn right(mut self, node: usize) -> Self {
-        self.right = Some(node);
-        self
-    }
-}
+//     fn left(mut self, node: usize) -> Self {
+//         self.left = Some(node);
+//         self
+//     }
 
-pub(crate) async fn build(
+//     fn right(mut self, node: usize) -> Self {
+//         self.right = Some(node);
+//         self
+//     }
+// }
+
+pub(crate) fn build(
     key: u64,
     leaves: Vec<(Identity, u64)>,
 ) -> (MerkleTree, Bits256, Bytes32, Vec<Bits256>) {

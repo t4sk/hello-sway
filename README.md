@@ -39,23 +39,24 @@ forc deploy --unsigned
 
 ### Apps
 
--   counter (storage)
--   ownership (Identity type, msg_sender, configurable, Option, Error, imports)
--   wallet (native assets, identity, access control, payable, output variables)
+-   [x] counter (storage)
+-   [x] ownership (Identity type, msg_sender, configurable, Option, Error, imports)
+-   [x] wallet (native assets, identity, access control, payable, output variables)
 -   native token (native assets, asset id, payable, output variables)
--   wrapped token (contract_id, msg_asset_id, mint, burn, transfer)
+-   [x] wrapped token (contract_id, msg_asset_id, mint, burn, transfer)
 -   bridge?
--   call contract
--   multi-sig (multi token, multi abi, loop, storage vec, events, generic_call)
+-   [ ] multi-sig (multi token, multi abi, loop, storage vec, events, generic_call)
+-   [ ] airdrop (sway-libs, events, multi abi, multi contracts, storage map, sha256)
 -   escrow
 -   amm
 -   auction
--   nft
--   airdrop
+-   nft?
 
 ### Topcis
 
 -   deploy to testnet
+-   sway lib
+-   default values
 
 -   inheritance?
 -   assert, require, revert

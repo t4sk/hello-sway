@@ -6,11 +6,11 @@ abigen!(Contract(
     abi = "out/debug/air-drop-abi.json"
 ));
 
-pub async fn set_up() -> (AirDrop<WalletUnlocked>, ContractId, Vec<WalletUnlocked>) {
+pub(crate) async fn set_up() -> (AirDrop<WalletUnlocked>, ContractId, Vec<WalletUnlocked>) {
     // Launch a local network and deploy the contract
     let mut wallets = launch_custom_provider_and_get_wallets(
         WalletsConfig::new(
-            Some(5),
+            Some(4),
             Some(1),             /* Single coin (UTXO) */
             Some(1_000_000_000), /* Amount per coin */
         ),
