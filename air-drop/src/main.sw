@@ -18,7 +18,7 @@ use merkle_proof::binary_merkle_proof::{leaf_digest, verify_proof};
 use ::errors::{ClaimError, InitError};
 
 abi AirDrop {
-    #[storage(read, write)]
+    #[storage(read, write), payable]
     fn init(merkle_root: b256, num_leaves: u64);
 
     #[storage(read, write)]
@@ -47,7 +47,7 @@ storage {
 }
 
 impl AirDrop for Contract {
-    #[storage(read, write)]
+    #[storage(read, write), payable]
     fn init(merkle_root: b256, num_leaves: u64) {
         require(storage.merkle_root.is_none(), InitError::CannotReinitialize);
         require(msg_amount() > 0, InitError::ZeroTokens);
