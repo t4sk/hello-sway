@@ -57,7 +57,7 @@ impl AirDrop for Contract {
         storage.merkle_root = Option::Some(merkle_root);
         storage.num_leaves = num_leaves;
 
-        log(events::Init {
+        log(events::InitEvent {
             asset,
             merkle_root,
             num_leaves,
@@ -87,7 +87,7 @@ impl AirDrop for Contract {
         transfer(amount, asset, sender);
 
         // Log
-        log(events::Claim {
+        log(events::ClaimEvent {
             index,
             amount,
             sender,
