@@ -1,4 +1,4 @@
-use fuels::{prelude::*, tx::ContractId, types::Identity};
+use fuels::{prelude::*, types::{Identity, ContractId}};
 
 // Load abi from json
 abigen!(Contract(
@@ -20,11 +20,11 @@ async fn get_contract_instance() -> (MyWallet<WalletUnlocked>, ContractId, Vec<W
     .await;
     let wallet = &wallets[0];
 
-    let id = Contract::deploy(
+    let id = Contract::load_from(
         "./out/debug/wallet.bin",
-        wallet,
-        DeployConfiguration::default(),
-    )
+        LoadConfiguration::default(),
+    ).unwrap()
+    .deploy(wallet, TxParameters::default())
     .await
     .unwrap();
 
