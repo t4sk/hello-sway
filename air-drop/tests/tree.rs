@@ -2,35 +2,6 @@ use fuel_merkle::{binary::in_memory::MerkleTree, common::Bytes32};
 use fuels::types::{Bits256, Identity};
 use sha2::{Digest, Sha256};
 
-// TODO: remove unused code
-
-// #[derive(Clone)]
-// struct Node {
-//     hash: Bytes32,
-//     left: Option<usize>,
-//     right: Option<usize>,
-// }
-
-// impl Node {
-//     fn new(hash: Bytes32) -> Self {
-//         Node {
-//             hash,
-//             left: None,
-//             right: None,
-//         }
-//     }
-
-//     fn left(mut self, node: usize) -> Self {
-//         self.left = Some(node);
-//         self
-//     }
-
-//     fn right(mut self, node: usize) -> Self {
-//         self.right = Some(node);
-//         self
-//     }
-// }
-
 pub(crate) fn build(
     key: u64,
     leaves: Vec<(Identity, u64)>,
@@ -42,16 +13,17 @@ pub(crate) fn build(
         let identity = data.0.clone();
 
         match identity {
+            // Encoding enum type + identity data
             Identity::Address(identity) => {
                 hasher.update([0, 0, 0, 0, 0, 0, 0, 0]);
                 hasher.update(*identity);
             }
-            // TODO: what's going on here?
             Identity::ContractId(identity) => {
                 hasher.update([0, 0, 0, 0, 0, 0, 0, 1]);
                 hasher.update(*identity);
             }
         }
+        // Appending amount
         hasher.update(data.1.to_be_bytes());
 
         let digest: [u8; 32] = hasher.finalize().try_into().unwrap();
@@ -59,16 +31,15 @@ pub(crate) fn build(
     }
 
     let merkle_root = tree.root();
+    // Returns (Bytes32, ProofSet = Vec<Bytes32>)
     let mut proof = tree.prove(key).unwrap();
-    // TODO: what?
+    // Remove merkle leaf from proof
     let merkle_leaf = proof.1[0];
     proof.1.remove(0);
 
     let mut final_proof: Vec<Bits256> = Vec::new();
-
-    for iterator in proof.1 {
-        // TODO: what?
-        final_proof.push(Bits256(iterator));
+    for node in proof.1 {
+        final_proof.push(Bits256(node));
     }
 
     (tree, Bits256(merkle_root), merkle_leaf, final_proof)
