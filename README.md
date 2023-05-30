@@ -46,11 +46,13 @@ forc deploy --unsigned
 -   [x] wrapped token (contract_id, msg_asset_id, mint, burn, transfer)
 -   bridge?
 -   [ ] multi-sig (multi token, multi abi, loop, storage vec, events, generic_call)
--   [ ] airdrop (sway-libs, events, multi abi, multi contracts, storage map, sha256, test events)
+-   [x] airdrop (sway-libs, events, multi abi, multi contracts, storage map, sha256, test events)
+-   [ ] nft
+-   [ ] liquidity book - amm
+-   uniswap v3 amm?
 -   escrow
--   amm
 -   auction
--   nft?
+-   queue (generics)
 
 ### Topcis
 
