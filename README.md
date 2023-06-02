@@ -44,17 +44,20 @@ forc deploy --unsigned
 -   [x] wallet (native assets, identity, access control, payable, output variables)
 -   native token (native assets, asset id, payable, output variables)
 -   [x] wrapped token (contract_id, msg_asset_id, mint, burn, transfer)
--   bridge?
 -   [ ] multi-sig (multi token, multi abi, loop, storage vec, events, generic_call)
 -   [x] airdrop (sway-libs, events, multi abi, multi contracts, storage map, sha256, test events)
--   [ ] nft
+-   [x] nft (log, nested storage map, private funcs, constant)
+-   [ ] bridge?
 -   [ ] liquidity book - amm
 -   uniswap v3 amm?
 -   escrow
 -   auction
 -   queue (generics)
+-   reentrancy guard?
 
 ### Topcis
+
+-   no inheritance, no constructor, global memory, native assets
 
 -   deploy to testnet
 -   sway lib
