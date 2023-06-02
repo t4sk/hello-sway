@@ -23,18 +23,47 @@ abi NFT {
     #[storage(read, write)]
     fn burn(token_id: u64);
     #[storage(read, write)]
-    fn approve(spender: Identity, token_id: u64);
-    #[storage(read, write)]
     fn set_approval_for_all(operator: Identity, approved: bool);
+    #[storage(read, write)]
+    fn approve(spender: Identity, token_id: u64);
     #[storage(read, write)]
     fn transfer_from(from: Identity, to: Identity, token_id: u64);
 }
+
+// NOTE: ZERO_B256 can also be imported from std::constants::ZERO_B256
+const ZERO_B256: b256 = 0x0000000000000000000000000000000000000000000000000000000000000000;
+const ZERO_ADDRESS: Address = Address::from(ZERO_B256);
+const ZERO_CONTRACT_ID: ContractId = ContractId::from(ZERO_B256);
 
 storage {
     token_id: u64 = 0,
     owner_of: StorageMap<u64, Identity> = StorageMap {},
     balance_of: StorageMap<Identity, u64> = StorageMap {},
     approvals: StorageMap<u64, Identity> = StorageMap {},
+    is_approved_for_all: StorageMap<(Identity, Identity), bool> = StorageMap {},
+}
+
+#[storage(read)]
+fn is_approved_or_owner(owner: Identity, spender: Identity, token_id: u64) -> bool {
+    if owner == spender {
+        return true;
+    }
+
+    if let Option::Some(approved_identity) = storage.approvals.get(token_id)
+    {
+        if approved_identity == spender {
+            return true;
+        }
+    }
+
+    return storage.is_approved_for_all.get((owner, spender)).unwrap_or(false);
+}
+
+fn is_zero_identity(id: Identity) -> bool {
+    match id {
+        Identity::Address(addr) => addr == ZERO_ADDRESS,
+        Identity::ContractId(contract_id) => contract_id == ZERO_CONTRACT_ID,
+    }
 }
 
 impl NFT for Contract {
@@ -56,12 +85,14 @@ impl NFT for Contract {
 
     #[storage(read)]
     fn is_approved_for_all(owner: Identity, operator: Identity) -> bool {
-        false
+        storage.is_approved_for_all.get((owner, operator)).unwrap_or(false)
     }
 
     // Write
     #[storage(read, write)]
     fn mint(to: Identity) -> u64 {
+        require(!is_zero_identity(to), TokenError::TransferToZeroIdentity);
+
         storage.token_id += 1;
         let token_id = storage.token_id;
         let owner = msg_sender().unwrap();
@@ -73,7 +104,7 @@ impl NFT for Contract {
         log(events::TransferEvent {
             token_id,
             from: Option::None,
-            to: Option::Some(owner)
+            to: Option::Some(owner),
         });
 
         token_id
@@ -93,11 +124,23 @@ impl NFT for Contract {
         storage.balance_of.insert(sender, bal - 1);
 
         // TODO: clear approvals
-
         log(events::TransferEvent {
             token_id,
             from: Option::Some(sender),
-            to: Option::None
+            to: Option::None,
+        });
+    }
+
+    #[storage(read, write)]
+    fn set_approval_for_all(operator: Identity, approved: bool) {
+        let sender = msg_sender().unwrap();
+
+        storage.is_approved_for_all.insert((sender, operator), approved);
+
+        log(events::ApprovalForAllEvent {
+            owner: sender,
+            operator,
+            approved,
         });
     }
 
@@ -105,21 +148,35 @@ impl NFT for Contract {
     fn approve(spender: Identity, token_id: u64) {
         let owner = storage.owner_of.get(token_id).unwrap();
         let sender = msg_sender().unwrap();
-        // TODO: check is approved for all
-        require(owner == sender, TokenError::NotAuthorized);
+        require(owner == sender || storage.is_approved_for_all.get((owner, sender)).unwrap_or(false), TokenError::NotAuthorized);
 
         storage.approvals.insert(token_id, spender);
 
-        log(events::ApprovalEvent{
+        log(events::ApprovalEvent {
             owner,
             spender,
-            token_id
+            token_id,
         });
     }
 
     #[storage(read, write)]
-    fn set_approval_for_all(operator: Identity, approved: bool) {}
+    fn transfer_from(from: Identity, to: Identity, token_id: u64) {
+        let owner = storage.owner_of.get(token_id).unwrap();
+        let sender = msg_sender().unwrap();
+        require(from == owner, TokenError::NotOwner);
+        require(is_approved_or_owner(from, sender, token_id), TokenError::NotAuthorized);
 
-    #[storage(read, write)]
-    fn transfer_from(from: Identity, to: Identity, token_id: u64) {}
+        require(!is_zero_identity(to), TokenError::TransferToZeroIdentity);
+
+        storage.balance_of.insert(from, storage.balance_of.get(from).unwrap() - 1);
+        storage.balance_of.insert(to, storage.balance_of.get(to).unwrap_or(0) + 1);
+        storage.owner_of.insert(token_id, to);
+        storage.approvals.remove(token_id);
+
+        log(events::TransferEvent {
+            token_id,
+            from: Option::Some(from),
+            to: Option::Some(to),
+        });
+    }
 }

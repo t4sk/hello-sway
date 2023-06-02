@@ -11,3 +11,9 @@ pub struct ApprovalEvent {
     spender: Identity,
     token_id: u64,
 }
+
+pub struct ApprovalForAllEvent {
+    owner: Identity,
+    operator: Identity,
+    approved: bool,
+}
