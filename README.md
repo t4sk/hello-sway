@@ -49,6 +49,7 @@ forc deploy --unsigned
 -   [x] nft (log, nested storage map, private funcs, constant)
 -   [ ] bridge?
 -   [ ] liquidity book - amm
+-   [ ] call (multiple contracts, call, low level call, calling other contracts (Rust SDK), fn_selector!)
 -   uniswap v3 amm?
 -   escrow
 -   auction
