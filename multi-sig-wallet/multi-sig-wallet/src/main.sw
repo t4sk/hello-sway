@@ -23,9 +23,12 @@ use std::{
         StorageMap,
         StorageVec,
     },
+    token::{
+        transfer,
+    },
 };
-use ::errors::{ExecuteError, InitError, SignatureError};
-use ::events::{ExecuteEvent};
+use ::errors::{InitError, SignatureError};
+use ::events::{ExecuteEvent, TransferEvent};
 
 // 2 out of 3 multisig wallet
 struct ExecuteParams {
@@ -41,20 +44,30 @@ struct ExecuteParams {
     // }
 }
 
+struct TransferParams {
+    to: Identity,
+    asset_id: ContractId,
+    amount: u64,
+}
+
 abi MultiSigWallet {
     #[storage(read, write)]
     fn init(owners: Vec<Identity>);
 
     #[storage(read, write)]
     fn execute(params: ExecuteParams, sigs: Vec<B512>);
+
+    // TODO: transfer assets with execute
+    #[storage(read, write)]
+    fn transfer(params: TransferParams, sigs: Vec<B512>);
 }
 
 abi WalletInfo {
     #[storage(read)]
-    fn nonce() -> u64;
+    fn owners() -> Vec<Identity>;
 
-    // #[storage(read)]
-    // fn owners() -> Vec<Identity>;
+    #[storage(read)]
+    fn nonce() -> u64;
 }
 
 configurable {
@@ -62,10 +75,7 @@ configurable {
     MIN_SIGS_REQUIRED: u64 = 2,
 }
 
-// TODO: events
-
 storage {
-    // TODO: owner can be contract?
     owners: StorageVec<Identity> = StorageVec {},
     is_owner: StorageMap<Identity, bool> = StorageMap {},
     nonce: u64 = 0,
@@ -93,12 +103,11 @@ impl MultiSigWallet for Contract {
 
     #[storage(read, write)]
     fn execute(params: ExecuteParams, sigs: Vec<B512>) {
-        // check initialized
-        let tx_hash = get_tx_hash(contract_id(), params, storage.nonce);
+        let tx_hash = sha256((contract_id(), params, storage.nonce));
 
         // get approval count
         verify(sigs, tx_hash);
-        require(sigs.len() >= MIN_SIGS_REQUIRED, ExecuteError::MinSignatures);
+        require(sigs.len() >= MIN_SIGS_REQUIRED, SignatureError::MinSignatures);
 
         let prev_nonce = storage.nonce;
         storage.nonce = prev_nonce + 1;
@@ -114,27 +123,45 @@ impl MultiSigWallet for Contract {
     }
 
     // TODO: deposit, withdraw, transfer?
+    #[storage(read, write)]
+    fn transfer(params: TransferParams, sigs: Vec<B512>) {
+        let tx_hash = sha256((contract_id(), params, storage.nonce));
+
+        // get approval count
+        verify(sigs, tx_hash);
+        require(sigs.len() >= MIN_SIGS_REQUIRED, SignatureError::MinSignatures);
+
+        let prev_nonce = storage.nonce;
+        storage.nonce = prev_nonce + 1;
+
+        // execute tx
+        transfer(params.amount, params.asset_id, params.to);
+
+        // log
+        log(TransferEvent {
+            tx_hash,
+            nonce: prev_nonce,
+        });
+    }
 }
 
 impl WalletInfo for Contract {
-    // #[storage(read)]
-    // fn owners() -> Vec<Identity> {
-    //     storage.owners
-    // }
+    #[storage(read)]
+    fn owners() -> Vec<Identity> {
+        let mut owners: Vec<Identity> = Vec::new();
+
+        let mut i = 0;
+        while i < storage.owners.len() {
+            owners.push(storage.owners.get(i).unwrap());
+            i += 1;
+        }
+        return owners;
+    }
+
     #[storage(read)]
     fn nonce() -> u64 {
         storage.nonce
     }
-}
-
-fn get_tx_hash(id: ContractId, params: ExecuteParams, nonce: u64) -> b256 {
-    sha256((id, params, nonce))
-}
-
-fn recover_signer(sig: B512, hash: b256) -> b256 {
-    // TODO: signature malleability?
-    // TODO: recover contract id?
-    ec_recover_address(sig, hash).unwrap().value
 }
 
 #[storage(read)]
@@ -142,8 +169,8 @@ fn verify(sigs: Vec<B512>, tx_hash: b256) {
     let mut prev_signer = b256::min();
     let mut i = 0;
     while i < sigs.len() {
-        let signer = recover_signer(sigs.get(i).unwrap(), tx_hash);
-        // TODO: log index inside error
+        let signer = ec_recover_address(sigs.get(i).unwrap(), tx_hash).unwrap().value;
+        // TODO: can contracts be signer?
         let signer_id = Identity::Address(Address::from(signer));
         require(storage.is_owner.get(signer_id).unwrap_or(false), SignatureError::NotOwner);
         require(prev_signer < signer, SignatureError::IncorrectSignerOrdering);

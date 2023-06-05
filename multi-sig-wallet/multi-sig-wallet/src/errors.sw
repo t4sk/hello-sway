@@ -10,8 +10,5 @@ pub enum InitError {
 pub enum SignatureError {
     NotOwner: (),
     IncorrectSignerOrdering: (),
-}
-
-pub enum ExecuteError {
     MinSignatures: (),
 }
