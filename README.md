@@ -44,12 +44,13 @@ forc deploy --unsigned
 -   [x] wallet (native assets, identity, access control, payable, output variables)
 -   native token (native assets, asset id, payable, output variables)
 -   [x] wrapped token (contract_id, msg_asset_id, mint, burn, transfer)
--   [ ] multi-sig (multi token, multi abi, loop, storage vec, events, generic_call)
--   [x] airdrop (sway-libs, events, multi abi, multi contracts, storage map, sha256, test events)
 -   [x] nft (log, nested storage map, private funcs, constant)
+-   [x] airdrop (sway-libs, events, multi abi, multi contracts, storage map, sha256, test events)
+-   [x] call (multiple contracts, call, low level call, calling other contracts (Rust SDK), fn_selector!)
+    # TODO: implement low level call for multisig
+-   [ ] multi-sig (multi token, vec on heap, multi abi, loop, storage vec, events, low_level_call, hash, recover sig)
 -   [ ] bridge?
 -   [ ] liquidity book - amm
--   [ ] call (multiple contracts, call, low level call, calling other contracts (Rust SDK), fn_selector!)
 -   uniswap v3 amm?
 -   escrow
 -   auction
@@ -58,7 +59,7 @@ forc deploy --unsigned
 
 ### Topcis
 
--   no inheritance, no constructor, global memory, native assets
+-   no inheritance, no constructor, global memory, native assets, no for loop
 
 -   deploy to testnet
 -   sway lib
