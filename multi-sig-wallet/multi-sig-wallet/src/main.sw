@@ -68,6 +68,13 @@ abi WalletInfo {
 
     #[storage(read)]
     fn nonce() -> u64;
+
+    // TODO: remove
+    #[storage(read)]
+    fn get_execute_tx_hash(params: ExecuteParams, nonce: u64) -> b256;
+
+    #[storage(read)]
+    fn verify(sigs: Vec<B512>, tx_hash: b256) -> bool;
 }
 
 configurable {
@@ -103,7 +110,8 @@ impl MultiSigWallet for Contract {
 
     #[storage(read, write)]
     fn execute(params: ExecuteParams, sigs: Vec<B512>) {
-        let tx_hash = sha256((contract_id(), params, storage.nonce));
+        // let tx_hash = sha256((contract_id(), params, storage.nonce));
+        let tx_hash = get_execute_tx_hash(params, storage.nonce);
 
         // get approval count
         verify(sigs, tx_hash);
@@ -162,6 +170,21 @@ impl WalletInfo for Contract {
     fn nonce() -> u64 {
         storage.nonce
     }
+
+    #[storage(read)]
+    fn get_execute_tx_hash(params: ExecuteParams, nonce: u64) -> b256 {
+        get_execute_tx_hash(params, nonce)
+    }
+
+    #[storage(read)]
+    fn verify(sigs: Vec<B512>, tx_hash: b256) -> bool {
+        verify(sigs, tx_hash);
+        return true;
+    }
+}
+
+fn get_execute_tx_hash(params: ExecuteParams, nonce: u64) -> b256 {
+    sha256((contract_id(), params, nonce))
 }
 
 #[storage(read)]

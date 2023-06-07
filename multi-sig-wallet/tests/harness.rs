@@ -1,7 +1,9 @@
 use fuels::{
+    core::{calldata, fn_selector},
     prelude::*,
     types::{ContractId, Identity},
 };
+use sha2::{Digest, Sha256};
 
 // Load abi from json
 abigen!(
@@ -85,4 +87,36 @@ async fn test_init() {
 
 // TODO: test deposit
 // TODO: test withdraw
+
 // TODO: test execute with signatures
+#[tokio::test]
+async fn test_execute() {
+    let wallets = get_wallets().await;
+    let (multi_sig, multi_sig_id) = get_multi_sig_instance(wallets[0].clone()).await;
+    let (test_contract, test_contract_id) = get_test_contract_instance(wallets[0].clone()).await;
+
+    let nonce: u64 = 0;
+    let call_params = CallParams {
+        coins: 0,
+        asset_id: ContractId::new(*BASE_ASSET_ID),
+        gas:100_000
+    };
+    let data = calldata!();
+
+    let execute_params = ExecuteParams {
+        contract_id: test_contract_id,
+        fn_selector: Bytes(fn_selector!(test_function())),
+        data: Bytes(data),
+        single_value_type_arg: true,
+        call_params: call_params
+    };
+
+    let mut hasher = Sha256::new();
+    hasher.update(multi_sig_id);
+    hasher.update(calldata!(execute_params));
+    hasher.update(nonce.to_be_bytes());
+    let tx_hash: [u8; 32] = hasher.finalize().try_into().unwrap();
+
+    println!("{:#?}", tx_hash);
+
+}
