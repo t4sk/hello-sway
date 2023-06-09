@@ -70,11 +70,9 @@ abi WalletInfo {
     fn nonce() -> u64;
 
     // TODO: remove
-    #[storage(read)]
-    fn get_execute_tx_hash(params: ExecuteParams, nonce: u64) -> b256;
+    fn get_tx_hash(params: TransferParams, nonce: u64) -> b256;
 
-    #[storage(read)]
-    fn verify(sigs: Vec<B512>, tx_hash: b256) -> bool;
+    fn get_execute_tx_hash(params: ExecuteParams, nonce: u64) -> b256;
 }
 
 configurable {
@@ -110,8 +108,7 @@ impl MultiSigWallet for Contract {
 
     #[storage(read, write)]
     fn execute(params: ExecuteParams, sigs: Vec<B512>) {
-        // let tx_hash = sha256((contract_id(), params, storage.nonce));
-        let tx_hash = get_execute_tx_hash(params, storage.nonce);
+        let tx_hash = sha256((contract_id(), params, storage.nonce));
 
         // get approval count
         verify(sigs, tx_hash);
@@ -120,8 +117,10 @@ impl MultiSigWallet for Contract {
         let prev_nonce = storage.nonce;
         storage.nonce = prev_nonce + 1;
 
+
+        // TODO: fix
         // execute tx
-        call_with_function_selector(params.contract_id, params.fn_selector, params.data, params.single_value_type_arg, params.call_params);
+        // call_with_function_selector(params.contract_id, params.fn_selector, params.data, params.single_value_type_arg, params.call_params);
 
         // log
         log(ExecuteEvent {
@@ -133,7 +132,7 @@ impl MultiSigWallet for Contract {
     // TODO: deposit, withdraw, transfer?
     #[storage(read, write)]
     fn transfer(params: TransferParams, sigs: Vec<B512>) {
-        let tx_hash = sha256((contract_id(), params, storage.nonce));
+        let tx_hash = sha256(contract_id(), params, storage.nonce));
 
         // get approval count
         verify(sigs, tx_hash);
@@ -171,19 +170,16 @@ impl WalletInfo for Contract {
         storage.nonce
     }
 
-    #[storage(read)]
-    fn get_execute_tx_hash(params: ExecuteParams, nonce: u64) -> b256 {
-        get_execute_tx_hash(params, nonce)
+    fn get_tx_hash(params: TransferParams, nonce: u64) -> b256 {
+        sha256((contract_id(), params, nonce))
     }
 
-    #[storage(read)]
-    fn verify(sigs: Vec<B512>, tx_hash: b256) -> bool {
-        verify(sigs, tx_hash);
-        return true;
+    fn get_execute_tx_hash(params: ExecuteParams, nonce: u64) -> b256 {
+        sha256((contract_id(), params, nonce))
     }
 }
 
-fn get_execute_tx_hash(params: ExecuteParams, nonce: u64) -> b256 {
+fn get_tx_hash(params: TransferParams, nonce: u64) -> b256 {
     sha256((contract_id(), params, nonce))
 }
 
