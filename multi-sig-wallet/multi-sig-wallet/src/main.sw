@@ -37,11 +37,6 @@ struct ExecuteParams {
     data: Bytes,
     single_value_type_arg: bool,
     call_params: CallParams,
-    // pub struct CallParams {
-    //     coins: u64,
-    //     asset_id: ContractId,
-    //     gas: u64,
-    // }
 }
 
 struct TransferParams {
@@ -70,9 +65,11 @@ abi WalletInfo {
     fn nonce() -> u64;
 
     // TODO: remove
-    fn get_tx_hash(params: TransferParams, nonce: u64) -> b256;
-
     fn get_execute_tx_hash(params: ExecuteParams, nonce: u64) -> b256;
+
+    fn get_transfer_tx_hash(params: TransferParams, nonce: u64) -> b256;
+
+    fn get_signers(params: ExecuteParams, nonce: u64, sigs: Vec<B512>) -> Vec<Identity>;
 }
 
 configurable {
@@ -108,21 +105,18 @@ impl MultiSigWallet for Contract {
 
     #[storage(read, write)]
     fn execute(params: ExecuteParams, sigs: Vec<B512>) {
-        let tx_hash = sha256((contract_id(), params, storage.nonce));
+        let tx_hash = _get_execute_tx_hash(params, storage.nonce);
 
-        // get approval count
-        verify(sigs, tx_hash);
+        // Check approvals
         require(sigs.len() >= MIN_SIGS_REQUIRED, SignatureError::MinSignatures);
+        verify(sigs, tx_hash);
 
         let prev_nonce = storage.nonce;
         storage.nonce = prev_nonce + 1;
 
-
-        // TODO: fix
         // execute tx
-        // call_with_function_selector(params.contract_id, params.fn_selector, params.data, params.single_value_type_arg, params.call_params);
+        call_with_function_selector(params.contract_id, params.fn_selector, params.data, params.single_value_type_arg, params.call_params);
 
-        // log
         log(ExecuteEvent {
             tx_hash,
             nonce: prev_nonce,
@@ -132,7 +126,7 @@ impl MultiSigWallet for Contract {
     // TODO: deposit, withdraw, transfer?
     #[storage(read, write)]
     fn transfer(params: TransferParams, sigs: Vec<B512>) {
-        let tx_hash = sha256(contract_id(), params, storage.nonce));
+        let tx_hash = sha256((contract_id(), params, storage.nonce));
 
         // get approval count
         verify(sigs, tx_hash);
@@ -170,17 +164,40 @@ impl WalletInfo for Contract {
         storage.nonce
     }
 
-    fn get_tx_hash(params: TransferParams, nonce: u64) -> b256 {
+    fn get_transfer_tx_hash(params: TransferParams, nonce: u64) -> b256 {
         sha256((contract_id(), params, nonce))
     }
 
     fn get_execute_tx_hash(params: ExecuteParams, nonce: u64) -> b256 {
-        sha256((contract_id(), params, nonce))
+        _get_execute_tx_hash(params, nonce)
+    }
+
+    fn get_signers(params: ExecuteParams, nonce: u64, sigs: Vec<B512>) -> Vec<Identity> {
+        let tx_hash = _get_execute_tx_hash(params, nonce);
+
+        let mut signers: Vec<Identity> = Vec::new();
+        let mut i = 0;
+        while i < sigs.len() {
+            let signer = ec_recover_address(sigs.get(i).unwrap(), tx_hash).unwrap().value;
+            // TODO: can contracts be signer?
+            let signer_id = Identity::Address(Address::from(signer));
+            i += 1;
+            signers.push(signer_id);
+        }
+        signers
     }
 }
 
-fn get_tx_hash(params: TransferParams, nonce: u64) -> b256 {
-    sha256((contract_id(), params, nonce))
+fn _get_execute_tx_hash(params: ExecuteParams, nonce: u64) -> b256 {
+    sha256((
+        contract_id(),
+        params.contract_id,
+        params.fn_selector.sha256(),
+        params.data.sha256(),
+        params.single_value_type_arg,
+        params.call_params,
+        nonce,
+    ))
 }
 
 #[storage(read)]
