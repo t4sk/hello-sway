@@ -203,4 +203,9 @@ async fn test_execute() {
         .unwrap();
 
     println!("execute {:#?}", res);
+
+    // Check test contract
+    let res = test_contract.methods().get_count().call().await.unwrap();
+
+    println!("test contract {:#?}", res.value);
 }

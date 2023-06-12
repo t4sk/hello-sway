@@ -62,7 +62,7 @@ async fn test_sig() {
     println!("data hash: {:?}", data_hash);
     println!("res:       {:?}", res.value);
 
-    let data_bytes = calldata!((x, y, params.clone(), res.value.clone()));
+    let data_bytes = calldata!((x, y, params.clone(), Bits256(data_hash.clone())));
     // println!("calldata {:?}", data_bytes.clone());
 
     // Sign

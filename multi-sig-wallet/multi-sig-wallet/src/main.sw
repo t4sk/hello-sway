@@ -114,6 +114,7 @@ impl MultiSigWallet for Contract {
         let prev_nonce = storage.nonce;
         storage.nonce = prev_nonce + 1;
 
+        // TODO: return response?
         // execute tx
         call_with_function_selector(params.contract_id, params.fn_selector, params.data, params.single_value_type_arg, params.call_params);
 

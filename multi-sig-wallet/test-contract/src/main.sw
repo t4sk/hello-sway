@@ -1,11 +1,24 @@
 contract;
 
 abi TestContract {
-    fn test_function() -> bool;
+    #[storage(read, write)]
+    fn test_function();
+    #[storage(read)]
+    fn get_count() -> u64;
+}
+
+storage {
+    count: u64 = 0
 }
 
 impl TestContract for Contract {
-    fn test_function() -> bool {
-        true
+    #[storage(read, write)]
+    fn test_function() {
+        storage.count += 1;
+    }
+
+    #[storage(read)]
+    fn get_count() -> u64 {
+        storage.count
     }
 }
