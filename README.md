@@ -1,3 +1,11 @@
+### Playground
+
+https://sway-playground.org/
+
+### Browser wallet
+
+https://wallet.fuel.network/docs/install/
+
 ### Install
 
 https://github.com/FuelLabs/fuelup

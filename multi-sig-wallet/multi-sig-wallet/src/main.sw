@@ -4,6 +4,7 @@ mod errors;
 mod events;
 
 use std::{
+    constants::{BASE_ASSET_ID},
     b512::B512,
     bytes::Bytes,
     call_frames::{
@@ -49,6 +50,9 @@ abi MultiSigWallet {
     #[storage(read, write)]
     fn init(owners: Vec<Identity>);
 
+    #[payable]
+    fn deposit();
+
     #[storage(read, write)]
     fn execute(params: ExecuteParams, sigs: Vec<B512>);
 
@@ -64,10 +68,8 @@ abi WalletInfo {
     #[storage(read)]
     fn nonce() -> u64;
 
-    // TODO: remove
+    // Read only functions for debugging
     fn get_execute_tx_hash(params: ExecuteParams, nonce: u64) -> b256;
-
-    fn get_transfer_tx_hash(params: TransferParams, nonce: u64) -> b256;
 
     fn get_signers(params: ExecuteParams, nonce: u64, sigs: Vec<B512>) -> Vec<Identity>;
 }
@@ -103,6 +105,9 @@ impl MultiSigWallet for Contract {
         }
     }
 
+    #[payable]
+    fn deposit() {}
+
     #[storage(read, write)]
     fn execute(params: ExecuteParams, sigs: Vec<B512>) {
         let tx_hash = _get_execute_tx_hash(params, storage.nonce);
@@ -115,7 +120,7 @@ impl MultiSigWallet for Contract {
         storage.nonce = prev_nonce + 1;
 
         // TODO: return response?
-        // execute tx
+        // Execute tx
         call_with_function_selector(params.contract_id, params.fn_selector, params.data, params.single_value_type_arg, params.call_params);
 
         log(ExecuteEvent {
@@ -124,28 +129,34 @@ impl MultiSigWallet for Contract {
         });
     }
 
-    // TODO: deposit, withdraw, transfer?
     #[storage(read, write)]
     fn transfer(params: TransferParams, sigs: Vec<B512>) {
-        let tx_hash = sha256((contract_id(), params, storage.nonce));
+        log(DebugEvent{ params });
+        // let tx_hash = sha256((contract_id(), params, storage.nonce));
 
-        // get approval count
-        verify(sigs, tx_hash);
-        require(sigs.len() >= MIN_SIGS_REQUIRED, SignatureError::MinSignatures);
+        // // get approval count
+        // verify(sigs, tx_hash);
+        // require(sigs.len() >= MIN_SIGS_REQUIRED, SignatureError::MinSignatures);
 
-        let prev_nonce = storage.nonce;
-        storage.nonce = prev_nonce + 1;
+        // let prev_nonce = storage.nonce;
+        // storage.nonce = prev_nonce + 1;
 
-        // execute tx
-        transfer(params.amount, params.asset_id, params.to);
+        // // execute tx
+        // transfer(params.amount, params.asset_id, params.to);
+        transfer(params.amount, BASE_ASSET_ID, params.to);
 
-        // log
-        log(TransferEvent {
-            tx_hash,
-            nonce: prev_nonce,
-        });
+        // // log
+        // log(TransferEvent {
+        //     tx_hash,
+        //     nonce: prev_nonce,
+        // });
     }
 }
+
+struct DebugEvent {
+    params: TransferParams
+}
+
 
 impl WalletInfo for Contract {
     #[storage(read)]
@@ -163,10 +174,6 @@ impl WalletInfo for Contract {
     #[storage(read)]
     fn nonce() -> u64 {
         storage.nonce
-    }
-
-    fn get_transfer_tx_hash(params: TransferParams, nonce: u64) -> b256 {
-        sha256((contract_id(), params, nonce))
     }
 
     fn get_execute_tx_hash(params: ExecuteParams, nonce: u64) -> b256 {
