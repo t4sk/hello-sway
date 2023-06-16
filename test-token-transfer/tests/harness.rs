@@ -1,4 +1,6 @@
-use fuels::{prelude::*, types::{ContractId, Identity}};
+use fuels::{
+    accounts::wallet::WalletUnlocked,
+    prelude::*, types::{ContractId, Identity}};
 
 // Load abi from json
 abigen!(Contract(
@@ -55,14 +57,26 @@ async fn test_transfer() {
     let to_addr = Address::from(wallets[1].address());
     let to = Identity::Address(to_addr);
 
+    let bal = wallets[1].get_asset_balance(&BASE_ASSET_ID).await.unwrap();
+    println!("wallet balance before {:?}", bal);
+
     let res = inst
         .methods()
         .transfer(10, to)
         .append_variable_outputs(1)
         .call()
-        .await;
+        .await
+        .unwrap();
 
-    dbg!(res);
+    let bal = wallets[1].get_asset_balance(&BASE_ASSET_ID).await.unwrap();
+    println!("wallet balance after {:?}", bal);
 
-    // res.unwrap();
+    // let res = inst
+    //     .methods()
+    //     .get_balance_of_contract()
+    //     .call()
+    //     .await
+    //     .unwrap();
+
+    // println!("contract balance {:?}", res.value);
 }
