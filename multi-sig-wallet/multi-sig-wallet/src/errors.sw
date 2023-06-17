@@ -12,3 +12,7 @@ pub enum SignatureError {
     IncorrectSignerOrdering: (),
     MinSignatures: (),
 }
+
+pub enum AccessControlError {
+    NotAuthorized: (),
+}

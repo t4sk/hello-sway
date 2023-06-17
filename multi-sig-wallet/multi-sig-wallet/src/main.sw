@@ -4,11 +4,17 @@ mod errors;
 mod events;
 
 use std::{
-    constants::{BASE_ASSET_ID},
+    auth::msg_sender,
     b512::B512,
     bytes::Bytes,
     call_frames::{
         contract_id,
+    },
+    constants::{
+        BASE_ASSET_ID,
+    },
+    context::{
+        this_balance,
     },
     ecr::{
         ec_recover_address,
@@ -26,9 +32,10 @@ use std::{
     },
     token::{
         transfer,
+        transfer_to_address,
     },
 };
-use ::errors::{InitError, SignatureError};
+use ::errors::{AccessControlError, InitError, SignatureError};
 use ::events::{ExecuteEvent, TransferEvent};
 
 // 2 out of 3 multisig wallet
@@ -110,6 +117,9 @@ impl MultiSigWallet for Contract {
 
     #[storage(read, write)]
     fn execute(params: ExecuteParams, sigs: Vec<B512>) {
+        let sender = msg_sender().unwrap();
+        require(storage.is_owner.get(sender).unwrap_or(false), AccessControlError::NotAuthorized);
+
         let tx_hash = _get_execute_tx_hash(params, storage.nonce);
 
         // Check approvals
@@ -131,32 +141,28 @@ impl MultiSigWallet for Contract {
 
     #[storage(read, write)]
     fn transfer(params: TransferParams, sigs: Vec<B512>) {
-        log(DebugEvent{ params });
-        // let tx_hash = sha256((contract_id(), params, storage.nonce));
+        let sender = msg_sender().unwrap();
+        require(storage.is_owner.get(sender).unwrap_or(false), AccessControlError::NotAuthorized);
 
-        // // get approval count
-        // verify(sigs, tx_hash);
-        // require(sigs.len() >= MIN_SIGS_REQUIRED, SignatureError::MinSignatures);
+        let tx_hash = sha256((contract_id(), params, storage.nonce));
 
-        // let prev_nonce = storage.nonce;
-        // storage.nonce = prev_nonce + 1;
+        // get approval count
+        verify(sigs, tx_hash);
+        require(sigs.len() >= MIN_SIGS_REQUIRED, SignatureError::MinSignatures);
 
-        // // execute tx
-        // transfer(params.amount, params.asset_id, params.to);
-        transfer(params.amount, BASE_ASSET_ID, params.to);
+        let prev_nonce = storage.nonce;
+        storage.nonce = prev_nonce + 1;
 
-        // // log
-        // log(TransferEvent {
-        //     tx_hash,
-        //     nonce: prev_nonce,
-        // });
+        // execute tx
+        transfer(params.amount, params.asset_id, params.to);
+
+        // log
+        log(TransferEvent {
+            tx_hash,
+            nonce: prev_nonce,
+        });
     }
 }
-
-struct DebugEvent {
-    params: TransferParams
-}
-
 
 impl WalletInfo for Contract {
     #[storage(read)]
