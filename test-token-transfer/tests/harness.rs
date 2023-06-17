@@ -1,6 +1,8 @@
 use fuels::{
     accounts::wallet::WalletUnlocked,
-    prelude::*, types::{ContractId, Identity}};
+    prelude::*,
+    types::{ContractId, Identity},
+};
 
 // Load abi from json
 abigen!(Contract(
@@ -45,8 +47,7 @@ async fn test_transfer() {
         .set_amount(100)
         .set_asset_id(BASE_ASSET_ID);
 
-    inst
-        .methods()
+    inst.methods()
         .deposit()
         .call_params(call_params)
         .unwrap()

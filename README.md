@@ -1,5 +1,7 @@
 ### Playground
 
+TODO: - rewrite code targetting beta 3 testnet
+
 https://sway-playground.org/
 
 ### Browser wallet
@@ -11,10 +13,18 @@ https://wallet.fuel.network/docs/install/
 https://github.com/FuelLabs/fuelup
 
 ```shell
+rustup install stable
+rustup update
+rustup default stable
+
 fuelup toolchain install latest
 
 fuelup toolchain install beta-3
 fuelup default beta-3
+
+fuelup show
+# switch
+fuelup default latest
 ```
 
 ### Update

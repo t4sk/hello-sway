@@ -7,7 +7,7 @@ authors = ["t4sk <tsk.nakamura@gmail.com>"]
 license = "Apache-2.0"
 
 [dev-dependencies]
-fuels = { version = "0.41", features = ["fuel-core-lib"] }
+fuels = { version = "0.43", features = ["fuel-core-lib"] }
 tokio = { version = "1.12", features = ["rt", "macros"] }
 
 [[test]]
