@@ -64,6 +64,7 @@ impl MyWallet for Contract {
         require(sender.unwrap() == storage.owner.unwrap(), AccessControlError::UnauthorizedError);
         // TODO: check underflow
         storage.balance -= amount;
+        // TODO: test
 
         transfer_to_address(amount, BASE_ASSET_ID, to);
     }

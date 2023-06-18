@@ -12,9 +12,7 @@ use std::{
     },
     constants::{
         BASE_ASSET_ID,
-    },
-    context::{
-        this_balance,
+        // ZERO_B256,
     },
     ecr::{
         ec_recover_address,
@@ -32,7 +30,6 @@ use std::{
     },
     token::{
         transfer,
-        transfer_to_address,
     },
 };
 use ::errors::{AccessControlError, InitError, SignatureError};
@@ -63,7 +60,6 @@ abi MultiSigWallet {
     #[storage(read, write)]
     fn execute(params: ExecuteParams, sigs: Vec<B512>);
 
-    // TODO: transfer assets with execute
     #[storage(read, write)]
     fn transfer(params: TransferParams, sigs: Vec<B512>);
 }
@@ -86,6 +82,10 @@ configurable {
     MIN_SIGS_REQUIRED: u64 = 2,
 }
 
+const ZERO_B256: b256 = 0x0000000000000000000000000000000000000000000000000000000000000000;
+const ZERO_ADDRESS: Address = Address::from(ZERO_B256);
+const ZERO_ID: Identity = Identity::Address(Address::from(ZERO_B256));
+
 storage {
     owners: StorageVec<Identity> = StorageVec {},
     is_owner: StorageMap<Identity, bool> = StorageMap {},
@@ -104,7 +104,7 @@ impl MultiSigWallet for Contract {
         let mut i = 0;
         while i < num_owners {
             let owner = owners.get(i).unwrap();
-            // TODO: check owner not zero?
+            require(owner != ZERO_ID, "owner = zero");
             require(!storage.is_owner.get(owner).unwrap_or(false), InitError::DuplicateOwner);
             storage.is_owner.insert(owner, true);
             storage.owners.push(owner);
@@ -193,7 +193,6 @@ impl WalletInfo for Contract {
         let mut i = 0;
         while i < sigs.len() {
             let signer = ec_recover_address(sigs.get(i).unwrap(), tx_hash).unwrap().value;
-            // TODO: can contracts be signer?
             let signer_id = Identity::Address(Address::from(signer));
             i += 1;
             signers.push(signer_id);

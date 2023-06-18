@@ -2,7 +2,7 @@ contract;
 
 abi TestContract {
     #[storage(read, write)]
-    fn test_function();
+    fn inc();
     #[storage(read)]
     fn get_count() -> u64;
 }
@@ -13,7 +13,7 @@ storage {
 
 impl TestContract for Contract {
     #[storage(read, write)]
-    fn test_function() {
+    fn inc() {
         storage.count += 1;
     }
 
