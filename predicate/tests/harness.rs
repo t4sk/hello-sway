@@ -4,7 +4,7 @@ use fuels::{prelude::*, types::ContractId};
 // Load abi from json
 abigen!(Predicate(
     name = "MyPredicate",
-    abi = "out/debug/otc-abi.json"
+    abi = "out/debug/my-predicate-abi.json"
 ));
 
 async fn get_wallets() -> Vec<WalletUnlocked> {
@@ -27,7 +27,7 @@ async fn test_predicate() {
     let wallets = get_wallets().await;
 
     let data = MyPredicateEncoder::encode_data(123, 123);
-    let my_predicate = Predicate::load_from("out/debug/otc.bin")
+    let my_predicate = Predicate::load_from("out/debug/my-predicate.bin")
         .unwrap()
         .with_provider(wallets[0].try_provider().unwrap().clone())
         .with_data(data);
