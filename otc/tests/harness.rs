@@ -1,5 +1,5 @@
-use fuels::{prelude::*, types::ContractId};
 use fuels::accounts::predicate::Predicate;
+use fuels::{prelude::*, types::ContractId};
 
 // Load abi from json
 abigen!(Predicate(
@@ -23,10 +23,49 @@ async fn get_wallets() -> Vec<WalletUnlocked> {
 }
 
 #[tokio::test]
-async fn can_get_contract_id() {
+async fn test_predicate() {
     let wallets = get_wallets().await;
 
-    let my_predicate = Predicate::load_from("out/debug/otc.bin").unwrap();
+    let data = MyPredicateEncoder::encode_data(123, 123);
+    let my_predicate = Predicate::load_from("out/debug/otc.bin")
+        .unwrap()
+        .with_provider(wallets[0].try_provider().unwrap().clone())
+        .with_data(data);
 
-    // Now you have an instance of your contract you can use to test each function
+    // Check predicate balance.
+    wallets[0]
+        .transfer(
+            my_predicate.address(),
+            100,
+            BASE_ASSET_ID,
+            TxParameters::default(),
+        )
+        .await
+        .unwrap();
+
+    let bal = my_predicate
+        .get_asset_balance(&BASE_ASSET_ID)
+        .await
+        .unwrap();
+    println!("predicate balance: {:?}", bal);
+
+    // Transfer asset owned by predicate
+    my_predicate
+        .transfer(
+            wallets[1].address(),
+            100,
+            BASE_ASSET_ID,
+            TxParameters::default(),
+        )
+        .await
+        .unwrap();
+
+    let bal = my_predicate
+        .get_asset_balance(&BASE_ASSET_ID)
+        .await
+        .unwrap();
+    println!("predicate balance: {:?}", bal);
+
+    let bal = wallets[1].get_asset_balance(&BASE_ASSET_ID).await.unwrap();
+    println!("wallet 1 balance: {:?}", bal);
 }
