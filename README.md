@@ -2,6 +2,8 @@
 
 TODO: - rewrite code targetting beta 3 testnet
 
+TODO: - bridges
+
 https://sway-playground.org/
 
 ### Browser wallet
@@ -65,8 +67,8 @@ forc deploy --unsigned
 -   [x] nft (log, nested storage map, private funcs, constant)
 -   [x] airdrop (sway-libs, events, multi abi, multi contracts, storage map, sha256, test events)
 -   [x] call (multiple contracts, call, low level call, calling other contracts (Rust SDK), fn_selector!)
-    # TODO: implement low level call for multisig
--   [ ] multi-sig (multi token, vec on heap, multi abi, loop, storage vec, events, low_level_call, hash, recover sig)
+-   [x] multi-sig (multi token, vec on heap, multi abi, loop, storage vec, events, low_level_call, hash, recover sig)
+-   [ ] otc (predicate)
 -   [ ] bridge?
 -   [ ] liquidity book - amm
 -   uniswap v3 amm?
