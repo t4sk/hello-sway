@@ -1,24 +1,22 @@
 script;
 
-configurable {
-    MY_STRING: str[4] = "fuel",
-    ARRAY: [u32; 3] = [1, 2, 3],
-}
+/*
+Topics
+- immutable
+- mutable
+- type annotations
+*/
+fn main() {
+    // Immutable
+    // 0 <= u64 <= 2**64 - 1
+    let x = 5;
+    // Cannot re-assign x to another value
+    // x = 6;
 
-fn main() -> u64 {
-    // Variables are immutable by default
-    // u64 is default numeric type
-    // mut - mutable
-    let mut foo = 5;
-    foo = 6;
+    // Mutable
+    let mut y = 5;
+    y = 6;
 
     // Type annotations
-    let x: u32 = 5;
-    let s: str[4] = "sway";
-    let b: bool = true;
-
-    // Configuration-time constants
-    let config_string = MY_STRING;
-
-    return 1;
+    let i: u32 = 123;
 }

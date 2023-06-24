@@ -85,20 +85,23 @@ forc deploy --unsigned
 -   sway lib
 -   default values
 
--   inheritance?
--   assert, require, revert
--   program types (contract, library, scripts, predicates)
+-   program types overview
+
 -   basic
-    -   variables
-    -   built-in
-    -   blockchain
-    -   functions
-    -   structs
-    -   tuples
-    -   enums
-    -   methods
-    -   logging
-    -   control flow
+
+    -   [x] variables (immutable, mut, type annotations)
+    -   [ ] built-in
+    -   [ ] option and result
+    -   [ ] blockchain
+    -   [ ] functions
+    -   [ ] structs
+    -   [ ] tuples
+    -   [ ] enums
+    -   [ ] methods
+    -   [ ] constants
+    -   [ ] logging
+    -   [ ] control flow
+
 -   blockchain
     -   hashing and cryptography
     -   storage
@@ -118,3 +121,6 @@ forc deploy --unsigned
 -   Frontend
 -   Deploy, node
 -   wallet
+-   inheritance?
+-   assert, require, revert
+-   program types (contract, library, scripts, predicates)
