@@ -91,6 +91,9 @@ forc deploy --unsigned
 
     -   [x] variables (immutable, mut, type annotations)
     -   [ ] built-in
+        -   [ ] primitive types
+        -   [ ] compound type
+    -   [ ] destructuring
     -   [ ] option and result
     -   [ ] blockchain
     -   [ ] functions

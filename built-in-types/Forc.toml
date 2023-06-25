@@ -2,6 +2,6 @@
 authors = ["taz"]
 entry = "main.sw"
 license = "Apache-2.0"
-name = "built_in_types"
+name = "built-in-types"
 
 [dependencies]
