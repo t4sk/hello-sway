@@ -89,10 +89,10 @@ forc deploy --unsigned
 
 -   basic
 
-    -   [x] variables (immutable, mut, type annotations)
+    -   [x] variables (immutable, `mut`, type annotations)
     -   [ ] built-in
-        -   [ ] primitive types
-        -   [ ] compound type
+        -   [ ] primitive types (`u64`, `bool`, `str[]`, `b256`)
+        -   [ ] compound type (tuple, struct, array)
     -   [ ] destructuring
     -   [ ] option and result
     -   [ ] blockchain
