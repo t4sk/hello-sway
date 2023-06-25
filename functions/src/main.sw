@@ -8,7 +8,7 @@ fn inc(ref mut num: u64) {
     num += 1;
 }
 
-fn swap(ref mut pair: (u64,u64)) {
+fn swap(ref mut pair: (u64, u64)) {
     let tmp = pair.0;
     pair.0 = pair.1;
     pair.1 = tmp;
