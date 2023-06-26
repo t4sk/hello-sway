@@ -1,4 +1,4 @@
-script;
+contract;
 
 // Compound types
 // - Tuples
@@ -11,32 +11,41 @@ struct Point {
     y: u64,
 }
 
-fn main() {
-    // Tuples
-    let t: (u64, bool) = (42, true);
-    // Access tuple value
-    assert(t.0 == 42);
-    assert(t.1);
+abi MyContract {
+    fn test_func() -> Point;
+}
 
-    // Destructuring a tuple (type annotation is optional)
-    let (num, boo) = t;
+impl MyContract for Contract {
+    fn test_func() -> Point {
+        // Tuples
+        let t: (u64, bool) = (42, true);
+        // Access tuple value
+        assert(t.0 == 42);
+        assert(t.1);
 
-    // Tuple of length 1
-    let one: (u64, ) = (123, );
+        // Destructuring a tuple (type annotation is optional)
+        let (num, boo) = t;
 
-    // Struct
-    let p = Point { x: 1, y: 2 };
-    // Access struct fields
-    assert(p.x == 1);
-    assert(p.y == 2);
+        // Tuple of length 1
+        let one: (u64, ) = (123, );
 
-    // Array
-    let u_arr: [u8; 5] = [1, 2, 3, 4, 5];
-    let s_arr: [str[3]; 3] = ["cat", "dog", "rat"];
+        // Struct
+        let p = Point { x: 1, y: 2 };
+        // Access struct fields
+        assert(p.x == 1);
+        assert(p.y == 2);
 
-    let struct_arr: [Point; 2] = [Point { x: 1, y: 2 }, Point { x: 11, y: 22 }];
+        // Array
+        let u_arr: [u8; 5] = [1, 2, 3, 4, 5];
+        let s_arr: [str[3]; 3] = ["cat", "dog", "rat"];
 
-    // Mutating array
-    let mut mut_arr: [bool; 2] = [true, false];
-    mut_arr[1] = true;
+        let struct_arr: [Point; 2] = [Point { x: 1, y: 2 }, Point { x: 11, y: 22 }];
+
+        // Mutating array
+        let mut mut_arr: [bool; 2] = [true, false];
+        mut_arr[1] = true;
+
+        p
+    }
+
 }
