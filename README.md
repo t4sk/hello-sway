@@ -98,9 +98,10 @@ forc deploy --unsigned
     -   [x] structs
     -   [x] tuples
     -   [x] enums
+    -   [x] constants
+    -   [x] configurable constants
     -   [ ] option and result
     -   [ ] methods
-    -   [ ] constants
     -   [ ] logging
     -   [ ] control flow
 
