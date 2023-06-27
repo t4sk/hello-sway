@@ -94,11 +94,11 @@ forc deploy --unsigned
         -   [x] primitive types (`u64`, `bool`, `str[]`, `b256`)
         -   [x] compound type (tuple, struct, array)
     -   [x] blockchain types
-    -   [ ] functions (return outputs, `ref mut`)
+    -   [x] functions (return outputs, `ref mut`)
+    -   [x] structs
+    -   [x] tuples
+    -   [x] enums
     -   [ ] option and result
-    -   [ ] structs
-    -   [ ] tuples
-    -   [ ] enums
     -   [ ] methods
     -   [ ] constants
     -   [ ] logging

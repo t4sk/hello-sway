@@ -1,4 +1,4 @@
-script;
+contract;
 
 // Topics - Structs
 // - Create, read and update
@@ -16,27 +16,32 @@ struct Line {
     p1: Point,
 }
 
-fn main() {
-    // Create, read and update
-    let mut p0 = Point {
-        x: 1,
-        y: 2
-    };
+abi MyContract {
+    fn test_func() -> Line;
+}
 
-    p0.x = 11;
+impl MyContract for Contract {
+    fn test_func() -> Line {
+        // Create, read and update
+        let mut p0 = Point { x: 1, y: 2 };
 
-    // Shorthand
-    let x: u64 = 123;
-    let y: u64 = 123;
+        p0.x = 11;
 
-    let p1 = Point {x, y};
+        // Shorthand
+        let x: u64 = 123;
+        let y: u64 = 123;
 
-    // Nested structs
-    let line = Line {p0, p1};
+        let p1 = Point { x, y };
 
-    // Destructure
-    let Line {
-        p0: Point { x: x0, y: y0 },
-        p1: Point { x: x1, y: y1l}
-    } = line;
+        // Nested structs
+        let line = Line { p0, p1 };
+
+        // Destructure
+        let Line {
+            p0: Point { x: x0, y: y0 },
+            p1: Point { x: x1, y: y1l },
+        } = line;
+
+        line
+    }
 }
