@@ -1,5 +1,7 @@
 contract;
 
+// Option<T> = Some(T) | None
+
 abi MyContract {
     fn test_func() -> (Option<bool>, Option<bool>, Option<bool>);
 }
