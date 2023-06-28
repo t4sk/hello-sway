@@ -100,10 +100,14 @@ forc deploy --unsigned
     -   [x] enums
     -   [x] constants
     -   [x] configurable constants
-    -   [ ] option and result
+    -   [x] std lib types - option
+    -   [x] std lib types - result
     -   [ ] methods
-    -   [ ] logging
     -   [ ] control flow
+        -   [ ] if
+        -   [ ] match
+        -   [ ] while loop
+    -   [x] logging
 
 -   blockchain
     -   hashing and cryptography
