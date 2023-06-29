@@ -5,6 +5,15 @@ mod errors;
 use std::auth::{msg_sender};
 use ::errors::{AccessControlError, InitError};
 
+
+// configurable {
+//     OWNER: Identity = Identity::Address(Address::from(0x0000000000000000000000000000000000000000000000000000000000000000)),
+// }
+
+storage {
+    owner: Option<Identity> = Option::None,
+}
+
 abi MyContract {
     #[storage(read, write)]
     fn init();
@@ -14,15 +23,6 @@ abi MyContract {
 
     #[storage(read, write)]
     fn set_owner(id: Identity);
-}
-
-
-// configurable {
-//     OWNER: Identity = Identity::Address(Address::from(0x0000000000000000000000000000000000000000000000000000000000000000)),
-// }
-
-storage {
-    owner: Option<Identity> = Option::None,
 }
 
 impl MyContract for Contract {

@@ -20,11 +20,12 @@ async fn get_contract_instance() -> (MyContract<WalletUnlocked>, ContractId, Vec
     .await;
     let wallet = &wallets[0];
 
-    let id = Contract::deploy(
+    let id = Contract::load_from(
         "./out/debug/ownership.bin",
-        wallet,
-        DeployConfiguration::default(),
+        LoadConfiguration::default(),
     )
+    .unwrap()
+    .deploy(wallet, TxParameters::default())
     .await
     .unwrap();
 
