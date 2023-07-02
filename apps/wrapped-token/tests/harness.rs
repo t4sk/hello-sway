@@ -3,7 +3,7 @@ use fuels::{prelude::*, tx::ContractId, types::AssetId};
 // Load abi from json
 abigen!(Contract(
     name = "WrappedToken",
-    abi = "out/debug/wrapped_token-abi.json"
+    abi = "out/debug/wrapped-token-abi.json"
 ));
 
 async fn get_contract_instance() -> (
@@ -24,11 +24,12 @@ async fn get_contract_instance() -> (
     .await;
     let wallet = &wallets[0];
 
-    let id = Contract::deploy(
-        "./out/debug/wrapped_token.bin",
-        wallet,
-        DeployConfiguration::default(),
+    let id = Contract::load_from(
+        "./out/debug/wrapped-token.bin",
+        LoadConfiguration::default(),
     )
+    .unwrap()
+    .deploy(wallet, TxParameters::default())
     .await
     .unwrap();
 
@@ -37,37 +38,35 @@ async fn get_contract_instance() -> (
     (instance, id.into(), wallets)
 }
 
-// NOTE: need another contract to test deposit / withdraw to contract
 #[tokio::test]
 async fn test_deposit_and_withdraw_to_address() {
     let (instance, contract_id, wallets) = get_contract_instance().await;
     let asset_id = AssetId::new(contract_id.into());
 
-    // deposit
-    let call_params = CallParameters::default().set_amount(10);
-
+    // Deposit base asset
     instance
         .methods()
         .deposit()
-        .call_params(call_params)
+        .call_params(CallParameters::default().set_amount(10))
         .unwrap()
         .append_variable_outputs(1)
         .call()
         .await
         .unwrap();
 
+    // Check wrapped token balance of wallet[0]
     let bal = wallets[0].get_asset_balance(&asset_id).await.unwrap();
     assert_eq!(bal, 10);
 
-    // withdraw
-    let call_params = CallParameters::default()
-        .set_amount(1)
-        .set_asset_id(asset_id);
-
+    // Withdraw
     instance
         .methods()
         .withdraw()
-        .call_params(call_params)
+        .call_params(
+            CallParameters::default()
+                .set_amount(1)
+                .set_asset_id(asset_id),
+        )
         .unwrap()
         .append_variable_outputs(1)
         .call()
@@ -79,19 +78,31 @@ async fn test_deposit_and_withdraw_to_address() {
 }
 
 #[tokio::test]
-#[should_panic(expected = "msg amount = 0")]
-async fn test_deposit_zero_amount() {
+#[should_panic(expected = "not base asset")]
+async fn test_deposit_not_base_asset() {
     let (instance, contract_id, wallets) = get_contract_instance().await;
 
     let asset_id = AssetId::new(contract_id.into());
-
-    // deposit
-    let call_params = CallParameters::default().set_amount(0);
-
+    // Deposit base asset to obtain wrapped asset
     instance
         .methods()
         .deposit()
-        .call_params(call_params)
+        .call_params(CallParameters::default().set_amount(10))
+        .unwrap()
+        .append_variable_outputs(1)
+        .call()
+        .await
+        .unwrap();
+
+    // Try to deposit wrapped asset - should fail
+    instance
+        .methods()
+        .deposit()
+        .call_params(
+            CallParameters::default()
+                .set_amount(10)
+                .set_asset_id(asset_id),
+        )
         .unwrap()
         .append_variable_outputs(1)
         .call()
@@ -100,21 +111,16 @@ async fn test_deposit_zero_amount() {
 }
 
 #[tokio::test]
-#[should_panic(expected = "not base asset")]
-async fn test_deposit_not_base_asset() {
+#[should_panic(expected = "msg amount = 0")]
+async fn test_deposit_zero_amount() {
     let (instance, contract_id, wallets) = get_contract_instance().await;
 
     let asset_id = AssetId::new(contract_id.into());
 
-    // deposit
-    let call_params = CallParameters::default()
-        .set_amount(10)
-        .set_asset_id(asset_id);
-
     instance
         .methods()
         .deposit()
-        .call_params(call_params)
+        .call_params(CallParameters::default().set_amount(0))
         .unwrap()
         .append_variable_outputs(1)
         .call()

@@ -1,5 +1,5 @@
 [package]
-name = "wrapped_token"
+name = "wrapped-token"
 description = "A cargo-generate template for Rust + Sway integration testing."
 version = "0.1.0"
 edition = "2021"
@@ -7,7 +7,7 @@ authors = ["t4sk <tsk.nakamura@gmail.com>"]
 license = "Apache-2.0"
 
 [dev-dependencies]
-fuels = { version = "0.39", features = ["fuel-core-lib"] }
+fuels = { version = "0.41", features = ["fuel-core-lib"] }
 tokio = { version = "1.12", features = ["rt", "macros"] }
 
 [[test]]

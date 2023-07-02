@@ -8,6 +8,6 @@ source = 'git+https://github.com/fuellabs/sway?tag=v0.37.3#d09ef912828f5fc719350
 dependencies = ['core']
 
 [[package]]
-name = 'wrapped_token'
+name = 'wrapped-token'
 source = 'member'
 dependencies = ['std']

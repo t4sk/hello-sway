@@ -1,17 +1,26 @@
 contract;
 
+// payable
+// msg_asset_id
+// msg_amount
+// BASE_ASSET_ID
+// mint, burn, transfer
 use std::{
-    call_frames::{msg_asset_id, contract_id},
-    context::msg_amount,
-    auth::{msg_sender},
+    auth::{
+        msg_sender,
+    },
+    call_frames::{
+        contract_id,
+        msg_asset_id,
+    },
     constants::BASE_ASSET_ID,
+    context::{msg_amount, balance_of},
     token::{
-        mint_to_address,
-        mint_to_contract,
+        mint_to,
+        mint,
         burn,
-        transfer_to_address,
-        force_transfer_to_contract
-    }
+        transfer
+    },
 };
 
 abi WrappedToken {
@@ -25,15 +34,13 @@ impl WrappedToken for Contract {
     #[payable]
     fn deposit() {
         require(msg_asset_id() == BASE_ASSET_ID, "not base asset");
-        
+
         let amount = msg_amount();
         require(amount > 0, "msg amount = 0");
 
-        let id = msg_sender().unwrap();
-        match id {
-            Identity::Address(addr) => mint_to_address(amount, addr),
-            Identity::ContractId(con_id) => mint_to_contract(amount, con_id),
-        };
+        // mint_to(amount, msg_sender().unwrap());
+        mint(amount);
+        transfer(amount, contract_id(), msg_sender().unwrap());
     }
 
     #[payable]
@@ -44,11 +51,6 @@ impl WrappedToken for Contract {
         require(amount > 0, "msg amount = 0");
 
         burn(amount);
-
-        let id = msg_sender().unwrap();
-        match id {
-            Identity::Address(addr) => transfer_to_address(amount, BASE_ASSET_ID, addr),
-            Identity::ContractId(con_id) => force_transfer_to_contract(amount, BASE_ASSET_ID, con_id),
-        };
+        transfer(amount, BASE_ASSET_ID, msg_sender().unwrap());
     }
 }
