@@ -111,8 +111,9 @@ forc deploy --unsigned
     -   [ ] msg_sender (ownership)
     -   [x] base asset (wallet)
     -   [x] native support for assets (wrapped token)
-    -   [ ] storage
     -   [x] events
+    -   [x] storage map (simple, nested)
+    -   [x] vector (storage, heap) (nft)
     -   [ ] hashing and cryptography (air drop)
     -   [ ] function purity
     -   [ ] identifier
