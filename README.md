@@ -62,7 +62,6 @@ forc deploy --unsigned
 -   [x] counter (storage)
 -   [x] ownership (Identity type, msg_sender, configurable, Option, Error, imports)
 -   [x] wallet (native assets, identity, access control, payable, output variables)
--   native token (native assets, asset id, payable, output variables)
 -   [x] wrapped token (contract_id, msg_asset_id, mint, burn, transfer)
 -   [x] nft (log, nested storage map, private funcs, constant)
 -   [x] airdrop (sway-libs, events, multi abi, multi contracts, storage map, sha256, test events)
@@ -79,7 +78,7 @@ forc deploy --unsigned
 
 ### Topcis
 
--   no inheritance, no constructor, global memory, native assets, no for loop
+-   no inheritance, no constructor, global memory, native assets, no for loop, utxo
 
 -   deploy to testnet
 -   sway lib
@@ -102,22 +101,24 @@ forc deploy --unsigned
     -   [x] configurable constants
     -   [x] std lib types - option
     -   [x] std lib types - result
-    -   [ ] methods
-    -   [ ] control flow
-        -   [ ] if
-        -   [ ] match
-        -   [ ] while loop
+    -   [x] control flow
+        -   [x] if
+        -   [x] match
+        -   [x] while loop
     -   [x] logging
 
 -   blockchain
-    -   hashing and cryptography
-    -   storage
-    -   function purity
-    -   identifier
-    -   native assets
-    -   access control
-    -   calling contracts
+    -   [ ] msg_sender (ownership)
+    -   [x] base asset (wallet)
+    -   [x] native support for assets (wrapped token)
+    -   [ ] storage
+    -   [x] events
+    -   [ ] hashing and cryptography (air drop)
+    -   [ ] function purity
+    -   [ ] identifier
+    -   [ ] calling contracts
 -   advanced
+    -   [ ] methods
     -   generics
     -   traits
     -   assembly
