@@ -6,6 +6,11 @@ mod errors;
 use std::auth::msg_sender;
 use ::errors::{TokenError};
 
+// NOTE: ZERO_B256 can also be imported from std::constants::ZERO_B256
+const ZERO_B256: b256 = 0x0000000000000000000000000000000000000000000000000000000000000000;
+const ZERO_ADDRESS: Address = Address::from(ZERO_B256);
+const ZERO_CONTRACT_ID: ContractId = ContractId::from(ZERO_B256);
+
 abi NFT {
     // Read
     #[storage(read)]
@@ -29,11 +34,6 @@ abi NFT {
     #[storage(read, write)]
     fn transfer_from(from: Identity, to: Identity, token_id: u64);
 }
-
-// NOTE: ZERO_B256 can also be imported from std::constants::ZERO_B256
-const ZERO_B256: b256 = 0x0000000000000000000000000000000000000000000000000000000000000000;
-const ZERO_ADDRESS: Address = Address::from(ZERO_B256);
-const ZERO_CONTRACT_ID: ContractId = ContractId::from(ZERO_B256);
 
 storage {
     token_id: u64 = 0,
@@ -118,12 +118,12 @@ impl NFT for Contract {
 
         // NOTE: token exists, so check is optional
         require(storage.owner_of.remove(token_id), TokenError::DoesNotExist);
+        // Ignore bool output (approval may or may not exist)
+        storage.approvals.remove(token_id);
 
         let bal = storage.balance_of.get(sender).unwrap_or(0);
-        // TODO: check underflow?
         storage.balance_of.insert(sender, bal - 1);
 
-        // TODO: clear approvals
         log(events::TransferEvent {
             token_id,
             from: Option::Some(sender),
@@ -165,7 +165,6 @@ impl NFT for Contract {
         let sender = msg_sender().unwrap();
         require(from == owner, TokenError::NotOwner);
         require(is_approved_or_owner(from, sender, token_id), TokenError::NotAuthorized);
-
         require(!is_zero_identity(to), TokenError::TransferToZeroIdentity);
 
         storage.balance_of.insert(from, storage.balance_of.get(from).unwrap() - 1);
