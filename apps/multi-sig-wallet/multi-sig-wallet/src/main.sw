@@ -82,7 +82,7 @@ configurable {
     MIN_SIGS_REQUIRED: u64 = 2,
 }
 
-const ZERO_B256: b256 = 0x0000000000000000000000000000000000000000000000000000000000000000;
+const ZERO_B256: b256 = b256::min();
 const ZERO_ADDRESS: Address = Address::from(ZERO_B256);
 const ZERO_ID: Identity = Identity::Address(Address::from(ZERO_B256));
 

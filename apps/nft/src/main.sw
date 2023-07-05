@@ -7,7 +7,7 @@ use std::auth::msg_sender;
 use ::errors::{TokenError};
 
 // NOTE: ZERO_B256 can also be imported from std::constants::ZERO_B256
-const ZERO_B256: b256 = 0x0000000000000000000000000000000000000000000000000000000000000000;
+const ZERO_B256: b256 = b256::min();
 const ZERO_ADDRESS: Address = Address::from(ZERO_B256);
 const ZERO_CONTRACT_ID: ContractId = ContractId::from(ZERO_B256);
 
