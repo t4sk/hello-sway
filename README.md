@@ -1,9 +1,5 @@
 ### Playground
 
-TODO: - rewrite code targetting beta 3 testnet
-
-TODO: - bridges
-
 https://sway-playground.org/
 
 ### Browser wallet
@@ -69,6 +65,7 @@ forc deploy --unsigned
 -   [x] multi-sig (multi token, vec on heap, multi abi, loop, storage vec, events, low_level_call, hash, recover sig)
 -   [ ] otc (predicate)
 -   [ ] bridge?
+-   [ ] clamm?
 -   [ ] liquidity book - amm
 -   uniswap v3 amm?
 -   escrow
@@ -76,7 +73,7 @@ forc deploy --unsigned
 -   queue (generics)
 -   reentrancy guard?
 
-### Topcis
+### Topics
 
 -   no inheritance, no constructor, global memory, native assets, no for loop, utxo
 
@@ -114,7 +111,8 @@ forc deploy --unsigned
     -   [x] events
     -   [x] storage map (simple, nested)
     -   [x] vector (storage, heap) (nft)
-    -   [ ] hashing and cryptography (air drop)
+    -   [x] hash
+    -   [x] crypto signature (air drop)
     -   [ ] function purity
     -   [ ] identifier
     -   [ ] calling contracts

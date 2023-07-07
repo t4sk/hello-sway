@@ -8,18 +8,17 @@ use std::{
     call_frames::msg_asset_id,
     context::{
         msg_amount,
-        this_balance,
     },
     hash::sha256,
     logging::log,
     token::transfer,
 };
 use merkle_proof::binary_merkle_proof::{leaf_digest, verify_proof};
-use ::errors::{ClaimError, InitError};
+use ::errors::{ClaimError, DepositError};
 
 abi AirDrop {
-    #[storage(read, write), payable]
-    fn init(merkle_root: b256, num_leaves: u64);
+    #[payable]
+    fn deposit();
 
     #[storage(read, write)]
     fn claim(amount: u64, index: u64, proof: Vec<b256>);
@@ -27,10 +26,10 @@ abi AirDrop {
 
 abi AirDropInfo {
     #[storage(read)]
-    fn asset() -> Option<ContractId>;
+    fn asset() -> ContractId;
 
     #[storage(read)]
-    fn merkle_root() -> Option<b256>;
+    fn merkle_root() -> b256;
 
     #[storage(read)]
     fn num_leaves() -> u64;
@@ -39,52 +38,39 @@ abi AirDropInfo {
     fn claimed(index: u64) -> bool;
 }
 
+const ZERO: b256 = 0x0000000000000000000000000000000000000000000000000000000000000000;
+
+configurable {
+    ASSET: ContractId = ContractId::from(ZERO),
+    MERKLE_ROOT: b256 = ZERO,
+    NUM_LEAVES: u64 = 0,
+}
+
 storage {
-    asset: Option<ContractId> = Option::None,
-    merkle_root: Option<b256> = Option::None,
-    num_leaves: u64 = 0,
     claims: StorageMap<u64, bool> = StorageMap {},
 }
 
 impl AirDrop for Contract {
-    #[storage(read, write), payable]
-    fn init(merkle_root: b256, num_leaves: u64) {
-        require(storage.merkle_root.is_none(), InitError::CannotReinitialize);
-        require(msg_amount() > 0, InitError::ZeroTokens);
-
-        let asset = msg_asset_id();
-        storage.asset = Option::Some(asset);
-        storage.merkle_root = Option::Some(merkle_root);
-        storage.num_leaves = num_leaves;
-
-        log(events::InitEvent {
-            asset,
-            merkle_root,
-            num_leaves,
-        });
+    #[payable]
+    fn deposit() {
+        require(msg_amount() > 0, DepositError::ZeroAmount);
+        require(msg_asset_id() == ASSET, DepositError::NotAirDropAsset);
     }
 
     #[storage(read, write)]
     fn claim(amount: u64, index: u64, proof: Vec<b256>) {
-        // Check initializd
-        require(storage.merkle_root.is_some(), ClaimError::NotInitialized);
-
         // Check not claimed
         require(!storage.claims.get(index).unwrap_or(false), ClaimError::AlreadyClaimed);
 
         // Check merkle proof
         let sender = msg_sender().unwrap();
-        require(verify_proof(index, leaf_digest(sha256((sender, amount))), storage.merkle_root.unwrap(), storage.num_leaves, proof), ClaimError::InvalidMerkleProof);
-
-        // Check token balance (TODO: not needed?)
-        let asset = storage.asset.unwrap();
-        require(this_balance(asset) >= amount, ClaimError::InsufficientBalance);
+        require(verify_proof(index, leaf_digest(sha256((sender, amount))), MERKLE_ROOT, NUM_LEAVES, proof), ClaimError::InvalidMerkleProof);
 
         // Update claims
         storage.claims.insert(index, true);
 
         // Transfer token
-        transfer(amount, asset, sender);
+        transfer(amount, ASSET, sender);
 
         // Log
         log(events::ClaimEvent {
@@ -97,18 +83,18 @@ impl AirDrop for Contract {
 
 impl AirDropInfo for Contract {
     #[storage(read)]
-    fn asset() -> Option<ContractId> {
-        storage.asset
+    fn asset() -> ContractId {
+        ASSET
     }
 
     #[storage(read)]
-    fn merkle_root() -> Option<b256> {
-        storage.merkle_root
+    fn merkle_root() -> b256 {
+        MERKLE_ROOT
     }
 
     #[storage(read)]
     fn num_leaves() -> u64 {
-        storage.num_leaves
+        NUM_LEAVES
     }
 
     #[storage(read)]
