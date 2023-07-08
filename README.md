@@ -113,17 +113,14 @@ forc deploy --unsigned
     -   [x] vector (storage, heap) (nft)
     -   [x] hash
     -   [x] crypto signature (air drop)
+    -   [ ] calling contracts (multi sig)
     -   [ ] function purity
     -   [ ] identifier
-    -   [ ] calling contracts
 -   advanced
     -   [ ] methods
     -   generics
     -   traits
     -   assembly
--   collections
-    -   vector on heap
-    -   vector and map
 -   Testing (unit, integration)
 -   Frontend
 -   Deploy, node

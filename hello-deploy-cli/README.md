@@ -4,8 +4,6 @@ https://fuelbook.fuel.network/master/quickstart/smart-contract.html
 
 # Install
 
-https://fuelbook.fuel.network/master/quickstart/smart-contract.html
-
 ```shell
 # rust
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
@@ -65,10 +63,6 @@ forc-wallet accounts
 https://faucet-beta-3.fuel.network/
 
 https://fuellabs.github.io/block-explorer-v2/beta-3/#/
-
-```shell
-
-```
 
 # Deploy
 
