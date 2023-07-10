@@ -1,8 +1,22 @@
 use fuels::{
-    core::{calldata, fn_selector},
+    // core::{calldata, fn_selector},
     prelude::*,
     types::ContractId,
 };
+
+// Copied from 0.42 fuels::core::fn_selector
+macro_rules! fn_selector {
+    ( $fn_name: ident ( $($fn_arg: ty),* )  ) => {
+         fuels::core::function_selector::resolve_fn_selector(stringify!($fn_name), &[$( <$fn_arg as fuels::types::traits::Parameterize>::param_type() ),*]).to_vec()
+    }
+}
+
+// Copied from 0.42 fuels::core::calldata
+macro_rules! calldata {
+    ( $($arg: expr),* ) => {
+        fuels::core::abi_encoder::ABIEncoder::encode(&[$(fuels::types::traits::Tokenizable::into_token($arg)),*]).unwrap().resolve(0)
+    }
+}
 
 // Load abi from json
 abigen!(
