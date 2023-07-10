@@ -2,11 +2,11 @@ use fuels::{prelude::*, types::ContractId};
 
 // Load abi from json
 abigen!(Contract(
-    name = "MyContract",
+    name = "Counter",
     abi = "out/debug/counter-abi.json"
 ));
 
-async fn get_contract_instance() -> (MyContract<WalletUnlocked>, ContractId) {
+async fn get_contract_instance() -> (Counter<WalletUnlocked>, ContractId) {
     // Launch a local network and deploy the contract
     let mut wallets = launch_custom_provider_and_get_wallets(
         WalletsConfig::new(
@@ -29,7 +29,7 @@ async fn get_contract_instance() -> (MyContract<WalletUnlocked>, ContractId) {
     .await
     .unwrap();
 
-    let instance = MyContract::new(id.clone(), wallet);
+    let instance = Counter::new(id.clone(), wallet);
 
     (instance, id.into())
 }
