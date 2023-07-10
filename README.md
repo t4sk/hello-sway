@@ -113,7 +113,9 @@ forc deploy --unsigned
     -   [x] vector (storage, heap) (nft)
     -   [x] hash
     -   [x] crypto signature (air drop)
-    -   [ ] calling contracts (multi sig)
+    -   [x] calling contracts (multi sig)
+        -   [x] call
+        -   [x] low level call
     -   [ ] function purity
     -   [ ] identifier
 -   advanced
