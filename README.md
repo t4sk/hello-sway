@@ -53,37 +53,15 @@ forc deploy --unsigned
 
 ```
 
-### Apps
-
--   [x] counter (storage)
--   [x] ownership (Identity type, msg_sender, configurable, Option, Error, imports)
--   [x] wallet (native assets, identity, access control, payable, output variables)
--   [x] wrapped token (contract_id, msg_asset_id, mint, burn, transfer)
--   [x] nft (log, nested storage map, private funcs, constant)
--   [x] airdrop (sway-libs, events, multi abi, multi contracts, storage map, sha256, test events)
--   [x] call (multiple contracts, call, low level call, calling other contracts (Rust SDK), fn_selector!)
--   [x] multi-sig (multi token, vec on heap, multi abi, loop, storage vec, events, low_level_call, hash, recover sig)
--   [ ] otc (predicate)
--   [ ] bridge?
--   [ ] clamm?
--   [ ] liquidity book - amm
--   uniswap v3 amm?
--   escrow
--   auction
--   queue (generics)
--   reentrancy guard?
-
 ### Topics
 
 -   no inheritance, no constructor, global memory, native assets, no for loop, utxo
-
--   deploy to testnet
 -   sway lib
 -   default values
 
--   program types overview
+-   Program types overview
 
--   basic
+-   Basic
 
     -   [x] variables (immutable, `mut`, type annotations)
     -   [x] built-in
@@ -104,8 +82,9 @@ forc deploy --unsigned
         -   [x] while loop
     -   [x] logging
 
--   blockchain
-    -   [ ] msg_sender (ownership)
+-   Blockchain
+
+    -   [x] msg_sender (ownership)
     -   [x] base asset (wallet)
     -   [x] native support for assets (wrapped token)
     -   [x] events
@@ -117,16 +96,41 @@ forc deploy --unsigned
         -   [x] call
         -   [x] low level call
     -   [ ] function purity
-    -   [ ] identifier
--   advanced
+    -   [x] identifier (address and contract id)
+
+-   Advanced
+
     -   [ ] methods
-    -   generics
-    -   traits
-    -   assembly
--   Testing (unit, integration)
--   Frontend
--   Deploy, node
--   wallet
--   inheritance?
+    -   [ ]generics
+    -   [ ]traits
+    -   [ ]assembly
+
+-   Program types
+    -   [x] contracts
+    -   [x] libraries
+    -   [ ] scripts
+    -   [ ] predicates
+
+### Apps
+
+-   [x] counter (storage)
+-   [x] ownership (Identity type, msg_sender, configurable, Option, Error, imports)
+-   [x] wallet (native assets, identity, access control, payable, output variables)
+-   [x] wrapped token (contract_id, msg_asset_id, mint, burn, transfer)
+-   [x] nft (log, nested storage map, private funcs, constant)
+-   [x] airdrop (sway-libs, events, multi abi, multi contracts, storage map, sha256, test events)
+-   [x] call (multiple contracts, call, low level call, calling other contracts (Rust SDK), fn_selector!)
+-   [x] multi-sig (multi token, vec on heap, multi abi, loop, storage vec, events, low_level_call, hash, recover sig)
+
+TODO:
+
 -   assert, require, revert
--   program types (contract, library, scripts, predicates)
+-   [ ] otc (predicate)
+-   [ ] bridge?
+-   [ ] clamm?
+-   [ ] liquidity book - amm
+-   uniswap v3 amm?
+-   escrow
+-   auction
+-   queue (generics)
+-   reentrancy guard?
