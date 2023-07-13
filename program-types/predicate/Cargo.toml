@@ -3,11 +3,11 @@ name = "my-predicate"
 description = "A cargo-generate template for Rust + Sway integration testing."
 version = "0.1.0"
 edition = "2021"
-authors = ["t4sk <tsk.nakamura@gmail.com>"]
+authors = ["t4sk"]
 license = "Apache-2.0"
 
 [dev-dependencies]
-fuels = { version = "0.42", features = ["fuel-core-lib"] }
+fuels = { version = "0.41", features = ["fuel-core-lib"] }
 tokio = { version = "1.12", features = ["rt", "macros"] }
 
 [[test]]

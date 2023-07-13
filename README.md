@@ -81,6 +81,7 @@ forc deploy --unsigned
         -   [x] match
         -   [x] while loop
     -   [x] logging
+    -   [ ] test in sway
 
 -   Blockchain
 
@@ -95,15 +96,15 @@ forc deploy --unsigned
     -   [x] calling contracts (multi sig)
         -   [x] call
         -   [x] low level call
-    -   [ ] function purity
+    -   [x] function purity
     -   [x] identifier (address and contract id)
 
 -   Advanced
 
     -   [ ] methods
-    -   [ ]generics
-    -   [ ]traits
-    -   [ ]assembly
+    -   [ ] generics
+    -   [ ] traits
+    -   [ ] assembly
 
 -   Program types
     -   [x] contracts
