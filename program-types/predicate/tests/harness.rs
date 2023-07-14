@@ -1,5 +1,9 @@
 use fuels::accounts::predicate::Predicate;
-use fuels::{prelude::*, types::ContractId};
+use fuels::{
+    prelude::*,
+    types::{Bits256, ContractId},
+};
+use sha2::{Digest, Sha256};
 
 // Load abi from json
 abigen!(Predicate(
@@ -26,11 +30,20 @@ async fn get_wallets() -> Vec<WalletUnlocked> {
 async fn test_predicate() {
     let wallets = get_wallets().await;
 
-    let data = MyPredicateEncoder::encode_data(123, 123);
+    let secret_num: u64 = 123;
+
+    let mut hasher = Sha256::new();
+    hasher.update(secret_num.to_be_bytes());
+    let data_hash: [u8; 32] = hasher.finalize().try_into().unwrap();
+
+    let config = MyPredicateConfigurables::new().set_HASH(Bits256(data_hash.try_into().unwrap()));
+
     let my_predicate = Predicate::load_from("out/debug/my-predicate.bin")
         .unwrap()
         .with_provider(wallets[0].try_provider().unwrap().clone())
-        .with_data(data);
+        .with_configurables(config.clone());
+
+    println!("predicate address {:?}", my_predicate.address());
 
     // Check predicate balance.
     wallets[0]
@@ -47,13 +60,23 @@ async fn test_predicate() {
         .get_asset_balance(&BASE_ASSET_ID)
         .await
         .unwrap();
+
     println!("predicate balance: {:?}", bal);
 
     // Transfer asset owned by predicate
+    let data = MyPredicateEncoder::encode_data(secret_num);
+    let my_predicate = Predicate::load_from("out/debug/my-predicate.bin")
+        .unwrap()
+        .with_provider(wallets[0].try_provider().unwrap().clone())
+        .with_configurables(config.clone())
+        .with_data(data);
+
+    println!("predicate address {:?}", my_predicate.address());
+
     my_predicate
         .transfer(
             wallets[1].address(),
-            100,
+            bal,
             BASE_ASSET_ID,
             TxParameters::default(),
         )
@@ -64,6 +87,7 @@ async fn test_predicate() {
         .get_asset_balance(&BASE_ASSET_ID)
         .await
         .unwrap();
+
     println!("predicate balance: {:?}", bal);
 
     let bal = wallets[1].get_asset_balance(&BASE_ASSET_ID).await.unwrap();
