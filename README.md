@@ -110,7 +110,7 @@ forc deploy --unsigned
     -   [x] contracts
     -   [x] libraries
     -   [ ] scripts
-    -   [ ] predicates
+    -   [x] predicates
 
 ### Apps
 
@@ -122,6 +122,7 @@ forc deploy --unsigned
 -   [x] airdrop (sway-libs, events, multi abi, multi contracts, storage map, sha256, test events)
 -   [x] call (multiple contracts, call, low level call, calling other contracts (Rust SDK), fn_selector!)
 -   [x] multi-sig (multi token, vec on heap, multi abi, loop, storage vec, events, low_level_call, hash, recover sig)
+-   [ ] otc (predicate, gtf)
 
 TODO:
 

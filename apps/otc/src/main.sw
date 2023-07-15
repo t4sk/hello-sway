@@ -21,7 +21,6 @@ configurable {
     RECEIVER: Address = Address::from(0x0000000000000000000000000000000000000000000000000000000000000000),
 }
 
-
 // gtf = get transaction field
 // TODO: Remove once __gtf getters implemented in std-lib
 const GTF_OUTPUT_COIN_TO = 0x202;
