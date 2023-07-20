@@ -67,7 +67,7 @@ forc deploy --unsigned
     -   [x] built-in
         -   [x] primitive types (`u64`, `bool`, `str[]`, `b256`)
         -   [x] compound type (tuple, struct, array)
-    -   [x] blockchain types
+    -   [x] blockchain types (`Address`, `ContractId` and `Identity`)
     -   [x] functions (return outputs, `ref mut`)
     -   [x] structs
     -   [x] tuples
