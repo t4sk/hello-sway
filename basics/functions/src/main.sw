@@ -1,7 +1,7 @@
 contract;
 
 // Functions
-// - Simple example
+// - Internal and external functions
 // - ref mut
 // - Return multiple outputs
 
