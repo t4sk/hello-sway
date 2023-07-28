@@ -1,6 +1,6 @@
 contract;
 
-// Topics - Structs
+// Structs
 // - Create, read and update
 // - Shorthand notation
 // - Destructure
