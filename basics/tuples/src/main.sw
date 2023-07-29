@@ -1,6 +1,6 @@
 contract;
 
-// Topics - Tuples
+// Tuples
 // - Create, read, update
 // - Nested
 // - Destructure and "_"
