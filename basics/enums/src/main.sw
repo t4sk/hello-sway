@@ -1,6 +1,6 @@
 contract;
 
-// Topics - Enums
+// Enums
 // - Basics
 // - Enums of structs
 // - Enum of enums
