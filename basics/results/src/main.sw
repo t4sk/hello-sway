@@ -6,16 +6,24 @@ enum MathError {
     DivByZero: (),
 }
 
+fn div(x: u64, y: u64) -> Result<u64, MathError> {
+    if y == 0 {
+        return Result::Err(MathError::DivByZero);
+    }
+
+    Result::Ok(x / y)
+}
+
 abi MyContract {
-    fn div(x: u64, y: u64) -> Result<u64, MathError>;
+    fn test_div(x: u64, y: u64) -> u64;
 }
 
 impl MyContract for Contract {
-    fn div(x: u64, y: u64) -> Result<u64, MathError> {
-        if y == 0 {
-            return Result::Err(MathError::DivByZero);
+    fn test_div(x: u64, y: u64) -> u64 {
+        let res = div(x, y);
+        match res {
+            Result::Ok(val) => val,
+            Result::Err(err) => revert(0),
         }
-
-        Result::Ok(x / y)
     }
 }
