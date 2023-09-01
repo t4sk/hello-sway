@@ -1,0 +1,16 @@
+{
+    "name": "fuels-ts-utils",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "MIT",
+    "dependencies": {
+        "fuels": "^0.54.1",
+        "ts-node": "^10.9.1"
+    }
+}
