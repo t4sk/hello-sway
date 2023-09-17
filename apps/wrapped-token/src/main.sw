@@ -14,7 +14,7 @@ use std::{
         msg_asset_id,
     },
     constants::BASE_ASSET_ID,
-    context::{msg_amount, balance_of},
+    context::{msg_amount},
     token::{
         mint_to,
         mint,
